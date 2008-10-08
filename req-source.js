@@ -53,7 +53,7 @@
 
       _fixUrl = function (url)
       {
-        return /^(\/|https?:)/.test(url) ? url : (R.baseUrl||'%{s}').replace('%{s}', url);
+        return /^(\/|https?:)/.test(url) ? url : (R.baseUrl).replace('%{s}', url);
       },
 
 
@@ -108,9 +108,18 @@
       },
       
       _headElm,
+      _lastBaseUrl,
+      s = '%{s}',
 
       R = Req = function ()
       {
+        // normalize the baseUrl
+        var _baseUrl = R.baseUrl;
+        R.baseUrl = _lastBaseUrl =
+            _baseUrl  &&  (_baseUrl == _lastBaseUrl  ||  _baseUrl.indexOf(s)>-1)  ?  // if _baseUrl hasn't changed or if it contains the mandatory %{s}
+                _baseUrl:           // then return _baseUrl straight away
+                (_baseUrl||'')+s;  // otherwise enforce /append the %{s}
+  
         _headElm = _headElm || document.getElementsByTagName('head')[0];
         _queue.unshift.apply(_queue,  _prepQueue( [].slice.call(arguments, 0) ) );
         if (!R._isRunning) { _processNext(); }
