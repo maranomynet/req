@@ -7,130 +7,191 @@
       _prepQueue = function (queue)
       {
         var assetId,
-            _assets = R.assets,
+            _allAssets = R.assets,
+            _fixUrl = R.fixUrl,
             _fixedQueue = [];
 
-        for (var item, i=0; (item = queue[i]); i++)
+        for (var asset, i=0; (asset = queue[i]); i++)
         {
-          if (typeof item == 'function')
+          if (typeof asset == 'function')
           {
-            _fixedQueue.push(item);
+            _fixedQueue.push(asset);
           }
           else 
           {
-            if (item.charAt)
+            if (asset.charAt)
             {
-              // item is a String 
-              // ...let's rename it assetId and make item into an Asset Object.
-              assetId = item;
-              item = _assets[assetId] || ( _assets[assetId] = (_assets[_fixUrl(assetId)] || { src : assetId }) );
+              // asset is a String 
+              // ...let's rename it assetId and make asset into an Asset Object.
+              assetId = asset;
+              asset = _allAssets[assetId] || ( _allAssets[assetId] = (_allAssets[_fixUrl(assetId)] || { src : assetId }) );
             }
             else
             {
-              // item is an Asset Object
-              assetId = item.name || item.src;
-              _assets[assetId] = _assets[assetId] || item;
+              // asset is an Asset Object
+              assetId = asset.id || asset.src;
+              _allAssets[assetId] = _allAssets[assetId] || asset;
             }
 
-            if (!item._loaded)
+            if (!asset._queued && !asset._loaded)
             {
-              if (!item._processed)
+              asset._queued = 1; // this is a flag for avoiding infinite requirement loops.
+              if (!asset._processed)
               {
-                item._processed = 1;
-                //item.name = assetId; // unneccessary, but uniformity is nice?
-                item.src = _fixUrl(item.src || assetId);
-                item.req && (item.req = _prepQueue(item.req));
-                _assets[item.src] = item; // ensure that lookup by script URL works as well.
+                asset._processed = 1;
+                asset.id = assetId; 
+                if (asset.src) // you see
+                {
+                  asset.src = _fixUrl(asset.src || assetId);
+                  _allAssets[asset.src] = asset; // ensure that lookup by script URL works as well.
+                }
               }
-              _fixedQueue.push(item);
+              asset.req && _fixedQueue.push.apply( _fixedQueue, _prepQueue(asset.req) );
+              _fixedQueue.push(asset);
             }
-
           }
         }
         return _fixedQueue;
       },
 
 
-      _fixUrl = function (url)
+      _joinBuffer = [],
+      _bufferFlush = function ()
       {
-        return /^(\/|https?:)/.test(url) ? url : (R.baseUrl).replace('%{s}', url);
+        var asset,
+            i = _joinBuffer.length;
+
+        if (i>=R.joinLim)
+        {
+          var _concatUrls = [];
+          while (i--)
+          {
+            _concatUrls.unshift( R.getJoinUrl(_joinBuffer[i]) );
+          }
+          asset = {
+              src:    _joinUrl.replace(s, _concatUrls.join(R.joint||'')),
+              _loads: _joinBuffer
+            };
+          _joinBuffer = [];
+        }
+        else
+        {
+          asset = _joinBuffer.shift();
+          asset._forced = 1;
+        }
+        return asset;
       },
 
 
       _processNext = function ()
       {
-        if (R._isRunning = !!_queue.length)
+        if (R._isRunning = !!(_queue.length || _joinBuffer.length))
         {
-          var asset = _queue.shift();
+          var asset = _queue.shift() || _bufferFlush();
           if (typeof asset == 'function')
           {
-            asset();
-          }
-          else
-          {
-            if (!asset._loaded)
+            if (_joinBuffer.length)
             {
-              if (asset.check && asset.check())
+              _queue.unshift(asset);
+              asset = _bufferFlush();
+            }
+            else
+            {
+              asset();
+              asset = 0;
+            }
+          }
+          if (asset && !asset._loaded)
+          {
+            if (asset.check && asset.check())
+            {
+              asset._loaded = 1;
+            }
+            else
+            {
+              if (asset.join===true && !asset._forced)
               {
-                asset._loaded = 1;
+                _joinBuffer.push(asset);
               }
               else
               {
-                if (asset.req && asset._processed < 2)
+                if (_joinBuffer.length && !asset._forced)
                 {
-                  // Crude way of avoiding repeats && circles.
-                  asset._processed = 2;
                   _queue.unshift(asset);
-                  _queue.unshift.apply(_queue, asset.req);
+                  asset = _bufferFlush();
                 }
-                else
+                var scriptElm = document.createElement('script');
+                if (asset.charset) { scriptElm.charset = asset.charset; }
+                scriptElm.onload = scriptElm[_onreadystatechange] = function()
                 {
-                  var scriptElm = document.createElement('script');
-                  if (asset.charset) { scriptElm.charset = asset.charset; }
-                  scriptElm.onload = scriptElm[_onreadystatechange] = function()
+                  if (!scriptElm.readyState || /^(loaded|complete)$/.test(scriptElm.readyState))
                   {
-                    if (!scriptElm.readyState || /^(loaded|complete)$/.test(scriptElm.readyState))
+                    scriptElm[_onreadystatechange] = scriptElm.onload = null;
+                    asset._loaded = 1;
+                    for (var i=0,l=(asset._loads||[]).length; i<l; i++)
                     {
-                      scriptElm[_onreadystatechange] = scriptElm.onload = null;
-                      asset._loaded = 1;
-                      _processNext();
+                      asset._loads[i]._loaded = 1;
                     }
-                  };
-                  scriptElm.src = asset.src;
-                  _headElm.appendChild(scriptElm);
-                  return;
-                }
+                    _processNext();
+                  }
+                };
+                scriptElm.src = asset.src;
+                _insertPoint.parentNode.insertBefore(scriptElm, _insertPoint);
+                return;
               }
             }
           }
           _processNext();
         }
       },
-      
-      _headElm,
-      _lastBaseUrl,
+
+
+      _insertPoint,
+      _baseUrl,
+      _joinUrl,
       s = '%{s}',
 
       R = Req = function ()
       {
         // normalize the baseUrl
-        var _baseUrl = R.baseUrl;
-        R.baseUrl = _lastBaseUrl =
-            _baseUrl  &&  (_baseUrl == _lastBaseUrl  ||  _baseUrl.indexOf(s)>-1)  ?  // if _baseUrl hasn't changed or if it contains the mandatory %{s}
-                _baseUrl:           // then return _baseUrl straight away
-                (_baseUrl||'')+s;  // otherwise enforce /append the %{s}
-  
-        _headElm = _headElm || document.getElementsByTagName('head')[0];
-        _queue.unshift.apply(_queue,  _prepQueue( [].slice.call(arguments, 0) ) );
+        _baseUrl = R.baseUrl || '';
+        _baseUrl = _baseUrl + (_baseUrl.indexOf(s)==-1 && s || ''); // enforce+append the mandatory %{s}
+
+        // normalize the joinUrl
+        _joinUrl = R.joinUrl || '';
+        _joinUrl = _joinUrl + (_joinUrl.indexOf(s)==-1 && s || ''); // enforce+append the mandatory %{s}
+
+        _insertPoint = _insertPoint || document.getElementsByTagName('script')[0];
+        var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
+            i = _queueStub.lengthM;
+        while(i--) { _queueStub[i]._queued = 0; }
+        // prepend the new _queueStub to the main processing queue for graceful handling of nested Req() calls
+        _queue.unshift.apply(_queue, _queueStub);
         if (!R._isRunning) { _processNext(); }
       };
 
 
-  //R.baseUrl = ''; // Example: 'http://www.server.com/scripts/%{s}.js';  <--  %{s} will be replaced by `asset.src`
+  R.fixUrl = function (url)
+  {
+    return /^(\/|https?:)/.test(url) ? url : (_baseUrl).replace(s, url);
+  };
+
+  R.getJoinUrl = function (asset)
+  {
+    return asset.src.replace(_baseUrl.split(s)[0], '');
+  };
+
+  //R.baseUrl = '';  // Example: 'http://www.server.com/scripts/%{s}.js';  <--  %{s} will be replaced by `asset.src`
+  //R.joinUrl = '';  // Example: 'http://www.server.com/join/%{s}'
+  //R.joint = '';
+  R.joinLim = 1;  // minimum number of items in the _joinBuffer for joining to occur
+  R.join;         // Flag indicating whether or not to join urls. Default: OFF
+
+
   R.assets  = {
   /*
-      'My Asset ID' : {  // Friendly name/handle for this asset. Each resource is also indexed by it's URL (the `src` property)
-        name    : 'My Asset ID',                                     // Optional friendly name/handle for the assset. (Only ever used when passing asset objects as paramters to the Req() function)
+      'My Asset ID' : {  // Friendly id/name for this asset. Each resource is also indexed by it's URL (the `src` property)
+        id      : 'My Asset ID',                                     // Optional friendly id/name for the assset. (Only ever used when passing asset objects as paramters to the Req() function)
         req     : ['Asset name', 'Asset name 2'],                    // List of assets this asset depends on, each of which may depend on other assets, etc. etc.
         check   : function () { return !!window.myScriptObject; },   // Function to determine wheather this resource has alreay been loaded (via other means, such as, direct <script> tags, etc.)
         src     : 'js/myscript.js',                                  // The actual URL to the javascript file (this value is autogenerated )
