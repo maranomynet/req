@@ -133,9 +133,12 @@
                     if (!scriptElm.readyState || /^(loaded|complete)$/.test(scriptElm.readyState))
                     {
                       scriptElm[_onreadystatechange] = scriptElm.onload = null;
-                      var _loads = asset._loads || [asset],
-                          i = _loads.length;
-                      while (i--) { _loads[i]._loaded = 1; }
+                      var _loads = asset._loads || [asset];
+                      for (var i=0, _loadAsset; (_loadAsset = _loads[i]); i++)
+                      {
+                        _loadAsset._loaded = 1;
+                        _loadAsset.onload && _loadAsset.onload();
+                      }
                       _processNext();
                     }
                   };
