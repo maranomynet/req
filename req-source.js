@@ -3,7 +3,7 @@
 
   var _queue = [],
       _onreadystatechange = 'onreadystatechange',
-      _scriptElmId = 'reqjs_elm',
+
 
       _prepQueue = function (queue)
       {
@@ -41,7 +41,7 @@
               {
                 asset._processed = 1;
                 asset.id = assetId; 
-                if (asset.src) // you see, assets may not have an URL themselves - only a list of requirements.
+                if (asset.src) // Assets may have no URL themselves - only a list of requirements.
                 {
                   asset.src = _fixUrl(asset.src || assetId);
                   _allAssets[asset.src] = asset; // ensure that lookup by script URL works as well.
@@ -86,7 +86,7 @@
 
       _processNext = function ()
       {
-        if (R._isRunning = !!(_queue.length || _joinBuffer.length))
+        if (_isRunning = !!(_queue.length || _joinBuffer.length))
         {
           var asset = _queue.shift() || _bufferFlush();
           if (typeof asset == 'function')
@@ -98,8 +98,9 @@
             }
             else
             {
+              _nested = 1;
               asset();
-              asset = 0;
+              _nested = asset = 0;
             }
           }
           if (asset && !asset._loaded)
@@ -124,22 +125,21 @@
 
                 if (asset.src)
                 {
-                  document.write('<script src="'+asset.src+'" id="'+_scriptElmId+'" />'); // Yes, document.write is nasty but it's the method that works best cross-browser.
-                  var scriptElm = document.getElementById(_scriptElmId);
-                  scriptElm.id = null;
+                  var scriptElm = document.createElement('script');
                   if (asset.charset) { scriptElm.charset = asset.charset; }
+                  scriptElm.src = asset.src;
                   scriptElm.onload = scriptElm[_onreadystatechange] = function()
                   {
                     if (!scriptElm.readyState || /^(loaded|complete)$/.test(scriptElm.readyState))
                     {
                       scriptElm[_onreadystatechange] = scriptElm.onload = null;
-                      for (var i=0,l=(asset._loads||[asset]).length; i<l; i++)
-                      {
-                        asset._loads[i]._loaded = 1;
-                      }
+                      var _loads = asset._loads || [asset],
+                          i = _loads.length;
+                      while (i--) { _loads[i]._loaded = 1; }
                       _processNext();
                     }
                   };
+                  _headElm.appendChild(scriptElm);
                   return;
                 }
                 // else - asset has no src URL - must be a simple requirement-package....
@@ -152,6 +152,9 @@
       },
 
 
+      _nested,
+      _isRunning,
+      _headElm,
       _baseUrl,
       _joinUrl,
       s = '%{s}',
@@ -166,12 +169,13 @@
         _joinUrl = R.joinUrl || '';
         _joinUrl = _joinUrl + (_joinUrl.indexOf(s)==-1 && s || ''); // enforce+append the mandatory %{s}
 
+        _headElm = _headElm || document.getElementsByTagName('head')[0];
         var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
             i = _queueStub.lengthM;
         while(i--) { _queueStub[i]._queued = 0; }
         // prepend the new _queueStub to the main processing queue for graceful handling of nested Req() calls
-        _queue.unshift.apply(_queue, _queueStub);
-        if (!R._isRunning) { _processNext(); }
+        _queue[_nested?'unshift':'push'].apply(_queue, _queueStub);
+        if (!_isRunning) { _processNext(); }
       };
 
 
