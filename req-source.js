@@ -67,7 +67,10 @@
           var _concatUrls = [];
           while (i--)
           {
-            _concatUrls.unshift( R.getJoinUrl(_joinBuffer[i]) );
+            if (_joinBuffer[i].src)
+            {
+              _concatUrls.unshift( R.getJoinUrl(_joinBuffer[i]) );
+            }
           }
           asset = {
               src:    _joinUrl.replace(s, _concatUrls.join(R.joint||'')),
@@ -111,7 +114,7 @@
             }
             else
             {
-              if (asset.join===true && !asset._forced)
+              if ((asset.join===true || !asset.src)  &&  !asset._forced)
               {
                 _joinBuffer.push(asset);
               }
@@ -122,7 +125,6 @@
                   _queue.unshift(asset);
                   asset = _bufferFlush();
                 }
-
                 if (asset.src)
                 {
                   var scriptElm = document.createElement('script');
@@ -196,7 +198,6 @@
   //R.joinUrl = '';  // Example: 'http://www.server.com/join/%{s}'
   //R.joint = '';
   R.joinLim = 1;  // minimum number of items in the _joinBuffer for joining to occur
-  R.join;         // Flag indicating whether or not to join urls. Default: OFF
 
 
   R.assets  = {
