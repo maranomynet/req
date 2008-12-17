@@ -186,7 +186,7 @@
 
   R.fixUrl = function (url)
   {
-    return /^(\/|https?:)/.test(url) ? url : (_baseUrl).replace(s, url);
+    return /^(\.?\/|https?:)/.test(url) ? url : (_baseUrl).replace(s, url);
   };
 
   R.getJoinUrl = function (asset)
