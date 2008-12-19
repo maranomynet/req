@@ -101,9 +101,10 @@
             }
             else
             {
-              _nested = 1;
+              _nestingLevel = 1;
               asset();
-              _nested = asset = 0;
+              _nestingLevel = 0;
+              asset = null;
             }
           }
           if (asset && !asset._loaded)
@@ -157,7 +158,7 @@
       },
 
 
-      _nested,
+      _nestingLevel,
       _isRunning,
       _headElm,
       _baseUrl,
@@ -178,8 +179,11 @@
         var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
             i = _queueStub.lengthM;
         while(i--) { _queueStub[i]._queued = 0; }
-        // prepend the new _queueStub to the main processing queue for graceful handling of nested Req() calls
-        _queue[_nested?'unshift':'push'].apply(_queue, _queueStub);
+        // Do graceful handling of nested Req() calls by prepending (unshift) the new _queueStub to the main processing queue.
+        // ...otherwise append.
+        // TODO: BUG: This method of a single boolean nesting flag doesn't really handle nesting deeper than one level.
+        //            Which is unacceptable, really.  Makes the script behave "unintuitively".
+        _queue[_nestingLevel?'unshift':'push'].apply(_queue, _queueStub);
         if (!_isRunning) { _processNext(); }
       };
 
