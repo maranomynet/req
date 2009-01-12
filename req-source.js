@@ -18,7 +18,7 @@
           {
             _fixedQueue.push(asset);
           }
-          else 
+          else
           {
             if (asset.charAt)
             {
@@ -45,6 +45,10 @@
                 {
                   asset.src = _fixUrl(asset.src || assetId);
                   _allAssets[asset.src] = asset; // ensure that lookup by script URL works as well.
+                }
+                if (asset.req)
+                {
+                  asset.req = asset.req.charAt ? [asset.req] : asset.req;
                 }
               }
               asset.req && _fixedQueue.push.apply( _fixedQueue, _prepQueue(asset.req) );
@@ -101,9 +105,7 @@
             }
             else
             {
-              _nestingLevel = 1;
               asset();
-              _nestingLevel = 0;
               asset = null;
             }
           }
@@ -158,7 +160,6 @@
       },
 
 
-      _nestingLevel,
       _isRunning,
       _headElm,
       _baseUrl,
@@ -177,20 +178,18 @@
 
         _headElm = _headElm || document.getElementsByTagName('head')[0];
         var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
-            i = _queueStub.lengthM;
-        while(i--) { _queueStub[i]._queued = 0; }
-        // Do graceful handling of nested Req() calls by prepending (unshift) the new _queueStub to the main processing queue.
-        // ...otherwise append.
-        // TODO: BUG: This method of a single boolean nesting flag doesn't really handle nesting deeper than one level.
-        //            Which is unacceptable, really.  Makes the script behave "unintuitively".
-        _queue[_nestingLevel?'unshift':'push'].apply(_queue, _queueStub);
+            i = _queueStub.length;
+        while(i--) { delete _queueStub[i]._queued; }
+
+        _queue.unshift.apply(_queue, _queueStub);
+
         if (!_isRunning) { _processNext(); }
       };
 
 
   R.fixUrl = function (url)
   {
-    return /^(\.?\/|https?:)/.test(url) ? url : (_baseUrl).replace(s, url);
+    return /^(\.?\/|https?:)/.test(url) ? url : _baseUrl.replace(s, url);
   };
 
   R.getJoinUrl = function (asset)
