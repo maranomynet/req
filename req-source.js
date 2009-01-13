@@ -12,13 +12,15 @@
             _fixUrl = R.fixUrl,
             _fixedQueue = [];
 
-        for (var asset, i=0; (asset = queue[i]); i++)
+        for (var i=0,l=queue.length; i<l; i++)
         {
+          var asset = queue[i];
+         
           if (typeof asset == 'function')
           {
             _fixedQueue.push(asset);
           }
-          else
+          else if (asset)
           {
             if (asset.charAt)
             {
