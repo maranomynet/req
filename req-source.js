@@ -36,9 +36,9 @@
               _allAssets[assetId] = _allAssets[assetId] || asset;
             }
 
-            if (!asset._queued && !asset._loaded)
+            if (!asset._encountered && !asset._loaded)
             {
-              asset._queued = 1; // this is a flag for avoiding infinite requirement loops.
+              asset._encountered = 1; // this is a flag for avoiding infinite requirement loops.
               if (!asset._processed)
               {
                 asset._processed = 1;
@@ -181,7 +181,7 @@
         _headElm = _headElm || document.getElementsByTagName('head')[0];
         var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
             i = _queueStub.length;
-        while(i--) { delete _queueStub[i]._queued; }
+        while(i--) { delete _queueStub[i]._encountered; }
 
         _queue.unshift.apply(_queue, _queueStub);
 
