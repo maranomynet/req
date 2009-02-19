@@ -3,7 +3,7 @@
 
   var _queue = [],
       _onreadystatechange = 'onreadystatechange',
-
+      _onload = "onload",
 
       _prepQueue = function (queue)
       {
@@ -111,11 +111,16 @@
               asset = null;
             }
           }
-          if (asset && !asset._loaded)
+          if (asset  &&  !asset._loaded)
           {
             if (asset.check && asset.check())
             {
               asset._loaded = 1;
+              if (asset[_onload])
+              {
+                asset[_onload]();
+                asset[_onload] = null;
+              }
             }
             else
             {
@@ -135,16 +140,17 @@
                   var scriptElm = document.createElement('script');
                   if (asset.charset) { scriptElm.charset = asset.charset; }
                   scriptElm.src = asset.src;
-                  scriptElm.onload = scriptElm[_onreadystatechange] = function()
+                  scriptElm[_onload] = scriptElm[_onreadystatechange] = function()
                   {
                     if (!scriptElm.readyState || /^(loaded|complete)$/.test(scriptElm.readyState))
                     {
-                      scriptElm[_onreadystatechange] = scriptElm.onload = null;
+                      scriptElm[_onreadystatechange] = scriptElm[_onload] = null;
                       var _loads = asset._loads || [asset];
                       for (var i=0, _loadAsset; (_loadAsset = _loads[i]); i++)
                       {
                         _loadAsset._loaded = 1;
-                        _loadAsset.onload && _loadAsset.onload();
+                        _loadAsset[_onload] && _loadAsset[_onload]();
+                        _loadAsset[_onload] = null;
                       }
                       _processNext();
                     }
