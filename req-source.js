@@ -1,4 +1,6 @@
 // Concept based on JSLoad: http://www.instructables.com/blog/B2OLM73F5LDFN2Z/
+// Look into doing parallel downloading with DOM Node injection in normal browsers but using 'defer' in MSIE
+// As per suggestions in this article: http://www.stevesouders.com/blog/2009/04/27/loading-scripts-without-blocking/
 (function(){
 
   var _queue = [],
