@@ -140,6 +140,7 @@
                 if (asset.src)
                 {
                   var scriptElm = document.createElement('script');
+                  //scriptElm.defer = !0;
                   if (asset.charset) { scriptElm.charset = asset.charset; }
                   scriptElm.src = asset.src;
                   scriptElm[_onload] = scriptElm[_onreadystatechange] = function()
