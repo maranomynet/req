@@ -73,7 +73,7 @@
                   _allAssets[asset.src] = asset;
                 }
                 // Enforce that the dependency list must be Array
-                var req = asset.req
+                var req = asset.req;
                 if (req && req.charAt)
                 {
                   asset.req = [req];
