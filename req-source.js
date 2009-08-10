@@ -109,8 +109,8 @@
                 asset._processed = 1;
                 // enforce that the asset has .id
                 asset.id = assetId; 
-                // NOTE: Assets may have no URL themselves - only a list of requirements.
-                // if there's a .src Url, then...
+                // NOTE: Some assets may have no URL themselves - only a list of requirements.
+                // If there is a .src (URL), however, then...
                 if (asset.src)
                 {
                   // normalize the URL
