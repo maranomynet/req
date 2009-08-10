@@ -52,7 +52,7 @@
 // -------------------------------------------------------------------------------
   var _queue = [], // THE PROCESSING QUEUE!! Mother of all...
       _onreadystatechange = 'onreadystatechange', // string cache to cut down minified file-size
-      _onload = "onload",                         // string cache to cut down minified file-size
+      _onload = 'onload',                         // string cache to cut down minified file-size
 
       // prep (normalize) the asset array (arguments) passed to the Req() function.
       // runs recursively to resolve `.req` dependency information, and fold those assets back into the returned queue-stub
