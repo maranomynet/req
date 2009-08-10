@@ -1,8 +1,54 @@
-// Concept based on JSLoad: http://www.instructables.com/blog/B2OLM73F5LDFN2Z/
-// Look into doing parallel downloading with DOM Node injection in normal browsers but using 'defer' in MSIE
-// As per suggestions in this article: http://www.stevesouders.com/blog/2009/04/27/loading-scripts-without-blocking/
+/*
+  **** Req ****
+  Dependency handling and lazy script-loading library.
+  Standalone (no depeneencies) - defines a single object `Req` in the global scope.
+  
+  Concept based on JSLoad: http://www.instructables.com/blog/B2OLM73F5LDFN2Z/ with some ideas from Dojo.require and YUI 3.0 thrown into the mix.
+
+  Usage crash-course:
+
+      Req.baseUrl = '/js/';
+
+      // (See documentation for Req.assets objects, way deep below.)
+      Req.assets['base library'] = {
+        src: 'baselib.js',
+        check: function(){ return !!window.baseLib; }
+      };
+      Req.assets['my script'] = {
+        src: 'myscript.js',
+        req: ['base library'],
+        check: function(){ return !!window.myScript; }
+      };
+
+      var asset1 =  'my script',
+          asset2 =  'http://other.server.com/js/script.js',
+          asset3 = { 
+              src: 'http://yet.another.server.com/js/otherscript.js',
+              req: ['baselib.js']
+              check: function(){ return !!window.otherScript; }
+            },
+          callback = function(){ alert('Do stuff with `my script` and `asset`'); },
+          callback = function(){ alert('Do stuff with `my script` and `asset` and `asset2`); };
+
+      Req(
+          asset,
+          asset2,
+          callback,
+          asset2,
+          callback2
+        );
+
+
+  TODO:
+    * Look into doing parallel downloading with DOM Node injection in normal browsers but using 'defer' in MSIE
+      As per suggestions in this article: http://www.stevesouders.com/blog/2009/04/27/loading-scripts-without-blocking/
+
+*/
 (function(){
 
+// -------------------------------------------------------------------------------
+// Private Methods/Properties:
+// -------------------------------------------------------------------------------
   var _queue = [], // THE PROCESSING QUEUE!! Mother of all...
       _onreadystatechange = 'onreadystatechange', // string cache to save bytes
       _onload = "onload",  // string cache to save bytes
@@ -248,54 +294,67 @@
 
       _isRunning,  // flag to indicate that _processNext is indeed running - only waiting for a <script> to load.
       _headElm,    // cached reference to the <head> element
-      _baseUrl,    // cached *normalized* value of R.baseUrl
-      _joinUrl,    // cached *normalized* value of R.joinUrl
-      s = '%{s}',  // replacement pattern for inserting relative asset.src urls into _baseUrl and _joinUrl
-
-      R = Req = function () {
-        // normalize the baseUrl
-        _baseUrl = R.baseUrl || s;
-        _baseUrl += _baseUrl.indexOf(s)>-1 ? '' : s; // enforce+append the mandatory %{s}
-
-        // normalize the joinUrl
-        _joinUrl = R.joinUrl || s;
-        _joinUrl += _joinUrl.indexOf(s)>-1 ? '' : s; // enforce+append the mandatory %{s}
-
-        // find + store/cache the <head> element
-        _headElm = _headElm || document.getElementsByTagName('head')[0];
-        // prep (normalize) the assets in the arguments array.
-        var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
-            i = _queueStub.length;
-        // delete temporary "_encountered" markers inserted by _prepQueue (to avoid infinite `.req`uirement loops)
-        // subsequent runs of Req() might want to jump the queue with some of the same assets,
-        // and in that case we don't want _prepQueue to skip them.
-        while(i--) { delete _queueStub[i]._encountered; }
-
-        // always stack new _queueStubs at the beginning of the _queue, for immediate processing!
-        _queue.unshift.apply(_queue, _queueStub);
-
-        // if we're not waiting for a <script> to load, then start to _processNext item in the _queue
-        if (!_isRunning) { _processNext(); }
-      };
+      _baseUrl,    // cached *normalized* value of Req.baseUrl
+      _joinUrl,    // cached *normalized* value of Req.joinUrl
+      s,           // cached value of Req.urlToken  
 
 
-  // method used by _prepQueue() to normalize assset.src values and add a default _baseUrl to relative paths.
+
+// -------------------------------------------------------------------------------
+// Defining The Req Namespace:
+// -------------------------------------------------------------------------------
+
+  R = Req = function () {  // (also create a reference to Req from a minifiable local variable `R`)
+    s = s || R.urlToken || '%{s}'; // default Req.urlToken to a value of '%{s}'
+    // normalize the baseUrl
+    _baseUrl = R.baseUrl || s;
+    _baseUrl += _baseUrl.indexOf(s)>-1 ? '' : s; // enforce+append the mandatory %{s}
+
+    // normalize the joinUrl
+    _joinUrl = R.joinUrl || s;
+    _joinUrl += _joinUrl.indexOf(s)>-1 ? '' : s; // enforce+append the mandatory %{s}
+
+    // find + store/cache the <head> element
+    _headElm = _headElm || document.getElementsByTagName('head')[0];
+    // prep (normalize) the assets in the arguments array.
+    var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
+        i = _queueStub.length;
+    // delete temporary "_encountered" markers inserted by _prepQueue (to avoid infinite `.req`uirement loops)
+    // subsequent runs of Req() might want to jump the queue with some of the same assets,
+    // and in that case we don't want _prepQueue to skip them.
+    while(i--) { delete _queueStub[i]._encountered; }
+
+    // always stack new _queueStubs at the beginning of the _queue, for immediate processing!
+    _queue.unshift.apply(_queue, _queueStub);
+
+    // if we're not waiting for a <script> to load, then start to _processNext item in the _queue
+    if (!_isRunning) { _processNext(); }
+  };
+
+
+// -------------------------------------------------------------------------------
+// Public (Overloadable) Methods/Properties:
+// -------------------------------------------------------------------------------
+
+  //R.urlToken = '%{s}';  // replacement pattern for inserting relative asset.src urls into _baseUrl and _joinUrl
+  //R.baseUrl  = '';      // Example: 'http://www.server.com/scripts/%{s}.js';  <--  the first occurrence of Req.urlToken gets replaced by an `asset`'s `.src` value.
+  //R.joinUrl  = '';      // Example: 'http://www.server.com/join/%{s}'              (if the urlToken is missing, it gets appended to the Url)
+  //R.joint    = '';
+  R.joinLim = 1;        // minimum number of items in the _joinBuffer for joining to occur
+
+
+  // Req.fixUrl() is used by _prepQueue() to normalize assset.src values and add a default _baseUrl to relative paths.
   R.fixUrl = function (url)
   {
     return /^(\.?\/|https?:)/.test(url) ? url : _baseUrl.replace(s, url);
   };
 
-  // returns the joinURL stub for the given asset
-  // defaults to returning whatever comes after _baseUrl in a normalized asset.src
+  // Req.fixUrl() is used by _bufferFlush(), and returns the joinURL stub for the given asset.
+  // Defaults to returning whatever comes after _baseUrl in a normalized asset.src
   R.getJoinUrl = function (asset)
   {
     return asset.src.replace(_baseUrl.split(s)[0], '');
   };
-
-  //R.baseUrl = '';  // Example: 'http://www.server.com/scripts/%{s}.js';  <--  %{s} will be replaced by `asset.src`
-  //R.joinUrl = '';  // Example: 'http://www.server.com/join/%{s}'
-  //R.joint = '';
-  R.joinLim = 1;  // minimum number of items in the _joinBuffer for joining to occur
 
 
   // Req's asset database
@@ -306,7 +365,7 @@
         req     : ['Asset name', 'Asset name 2'],                    // List of assets this asset depends on, each of which may depend on other assets, etc. etc.
         check   : function () { return !!window.myScriptObject; },   // Function to determine wheather this resource has alreay been loaded (via other means, such as, direct <script> tags, etc.)
         src     : 'js/myscript.js',                                  // The actual URL to the javascript file (this value is autogenerated )
-        charset : 'utf-8'                                            // charset -- if such nonsense if required for your scripts to run.
+        charset : 'utf-8'                                            // charset -- if such nonsense if required for your scripts to run (common for mixed charset environments on old MSIE browsers).
       }
   */
   };
