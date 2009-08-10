@@ -42,6 +42,7 @@
   TODO:
     * Look into doing parallel downloading with DOM Node injection in normal browsers but using 'defer' in MSIE
       As per suggestions in this article: http://www.stevesouders.com/blog/2009/04/27/loading-scripts-without-blocking/
+    * Look into making assets groupable - so that each group has its own baseUrl and joining rules/parameters.
 
 */
 (function(){
@@ -50,8 +51,8 @@
 // Private Methods/Properties:
 // -------------------------------------------------------------------------------
   var _queue = [], // THE PROCESSING QUEUE!! Mother of all...
-      _onreadystatechange = 'onreadystatechange', // string cache to save bytes
-      _onload = "onload",  // string cache to save bytes
+      _onreadystatechange = 'onreadystatechange', // string cache to cut down minified file-size
+      _onload = "onload",                         // string cache to cut down minified file-size
 
       // prep (normalize) the asset array (arguments) passed to the Req() function.
       // runs recursively to resolve `.req` dependency information, and fold those assets back into the returned queue-stub
