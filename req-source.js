@@ -2,7 +2,7 @@
   **** Req ****
   Dependency handling and lazy script-loading library.
   Standalone (no depeneencies) - defines a single object `Req` in the global scope.
-  
+
   Concept based on JSLoad: http://www.instructables.com/blog/B2OLM73F5LDFN2Z/ with some ideas from Dojo.require and YUI 3.0 thrown into the mix.
 
   Usage crash-course:
@@ -37,6 +37,13 @@
           asset2,
           callback2
         );
+
+      // Subsequent calls to `Req`, place assets at the front of the processing queue.
+      // This makes nested `Req` calls possible.
+      Req('run-first.js');
+      // ...unless `true` is provided as a first parameter,
+      // in which case the assets are appended to the processing queue.
+      Req(true, 'run-last.js');
 
 
   TODO:
@@ -73,7 +80,7 @@
             // push functions onto the _fixedQueueStub and do nothing further. - Next please!
             _fixedQueueStub.push(asset);
           }
-          else if (asset)
+          else if (asset && asset !== true)
           {
             // if the asset is an humble String (i.e. a friendly id/handle or a URL)
             if (asset.charAt)
@@ -181,14 +188,14 @@
 
 
       _processNext = function () {
-
         // don't to anything if both the _queue and _joinBuffer are empty.
-        // NOTE: how the _isRunning flag is set inline. (to save precious bytes :-)
+        // Note: The _isRunning flag is set inline. (to save precious bytes :-)
         if (_isRunning = !!(_queue.length || _joinBuffer.length))
         {
           // if the _queue is empty, then use the (combined) contents of the _joinBuffer
           var asset = _queue.shift() || _bufferFlush();
           // check if it's a function that needs to be run.
+
           if (typeof asset == 'function')
           {
             // before running any functions, make sure to flush the _joinBuffer
@@ -203,7 +210,7 @@
             {
               // run the function
               asset();
-              asset = null; // set asset to null to avoid entering the condition block below (and save bytes+cycles on a second `typeof` check)
+              asset = null; // set asset to null to avoid entering the condition block below (and save us a second `typeof` check)
             }
           }
           // make sure this asset isn't `null` and isn't already loaded
@@ -305,7 +312,7 @@
 // Defining The Req Namespace:
 // -------------------------------------------------------------------------------
 
-  R = Req = function () {  // (also create a reference to Req from a minifiable local variable `R`)
+  R = Req = function (appendToQueue) {  // (also create a reference to Req from a minifiable local variable `R`)
     s = s || R.urlToken || '%{s}'; // default Req.urlToken to a value of '%{s}'
     // normalize the baseUrl
     _baseUrl = R.baseUrl || s;
@@ -325,11 +332,23 @@
     // and in that case we don't want _prepQueue to skip them.
     while(i--) { delete _queueStub[i]._encountered; }
 
-    // always stack new _queueStubs at the beginning of the _queue, for immediate processing!
-    _queue.unshift.apply(_queue, _queueStub);
+    // Default to stacking new _queueStub at the beginning of the _queue, for immediate processing!
+    // (this is A Good Thing because it faciliates nested Req() calls.)
+    // Allow `true` as a first argument, to push the _queueStub onto the *end* of the _queue, for delay processing.
+    _queue[appendToQueue===true?'push':'unshift'].apply(_queue, _queueStub);
 
-    // if we're not waiting for a <script> to load, then start to _processNext item in the _queue
-    if (!_isRunning) { _processNext(); }
+/** //FIXME: this setTimeout seems to screw up execution of `$(document).ready(fn)`
+    //       postphone activating this bit until we're figured out the issue.
+
+    // Delay first call to `_processNext();` slightly,
+    // to allow immediate subsequent `Req` calls to push assets in front of the `_queue`.
+    setTimeout(function(){
+/**/
+        // if, at that time, we're not waiting for a <script> to load, then start to _processNext item in the _queue
+        if (!_isRunning) { _processNext(); }
+/**
+      }, 100);
+/**/
   };
 
 
