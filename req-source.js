@@ -1,9 +1,34 @@
 /*
-  **** Req ****
-  Dependency handling and lazy script-loading library.
-  Standalone (no depeneencies) - defines a single object `Req` in the global scope.
+  **** Req-js ****
+
+  Version 1.0
+  Copyright (c) 2009 Már Örlygsson <mar.nospam [at] anomy [dot] net>
+  - Dual licensed under the MIT and GPL licenses.
+
+-----------------------------------------------------------------------------
+
+  Simple, easy to use, full-featured module to handle lazy-loading and dependency management of Javascript.
+  Standalone (no depeneencies) and defines only a single object `Req` in the global scope.
 
   Concept based on JSLoad: http://www.instructables.com/blog/B2OLM73F5LDFN2Z/ with some ideas from Dojo.require and YUI 3.0 thrown into the mix.
+
+  Key Features:
+    * Loads scripts asyncronously, with callbacks ...
+       * Ensuring all scripts execute in the correct order.
+    * Resolves and loads script dependencies.
+       * Gracefully handles circular dependency rules.
+    * Avoids loading the same script twice.
+       * Supports custom checks for the pre-existence of each script asset.
+    * Allows mixing of local and remotely-hosted scripts.
+    * Supports nested calls.
+    * Allows for joining multiple assets into one "combo" HTTP request. (if supported by your server)
+
+    * Highly configurable.
+    * Cross-browser and no external dependencies.
+    * Fast (no evals)
+    * Tiny! (less than 1 kB gzipped)
+
+-----------------------------------------------------------------------------
 
   Usage crash-course:
 
@@ -45,18 +70,22 @@
       // in which case the assets are appended to the processing queue.
       Req(true, 'run-last.js');
 
+-----------------------------------------------------------------------------
 
   TODO:
     * Look into doing parallel downloading with DOM Node injection in normal browsers but using 'defer' in MSIE
       As per suggestions in this article: http://www.stevesouders.com/blog/2009/04/27/loading-scripts-without-blocking/
     * Look into making assets groupable - so that each group has its own baseUrl and joining rules/parameters.
 
+
 */
+
 (function(){
 
 // -------------------------------------------------------------------------------
 // Private Methods/Properties:
 // -------------------------------------------------------------------------------
+
   var _queue = [], // THE PROCESSING QUEUE!! Mother of all...
       _onreadystatechange = 'onreadystatechange', // string cache to cut down minified file-size
       _onload = 'onload',                         // string cache to cut down minified file-size
@@ -337,7 +366,8 @@
     // Allow `true` as a first argument, to push the _queueStub onto the *end* of the _queue, for delay processing.
     _queue[appendToQueue===true?'push':'unshift'].apply(_queue, _queueStub);
 
-/** //FIXME: this setTimeout seems to screw up execution of `$(document).ready(fn)`
+/** //FIXME: this setTimeout seems to screw up execution of `jQuery(document).ready(fn)`
+    //       (caused by bug in jQuery - fixed in jQuery 1.3.3)
     //       postphone activating this bit until we're figured out the issue.
 
     // Delay first call to `_processNext();` slightly,
@@ -358,8 +388,8 @@
 
   //R.urlToken = '%{s}';  // replacement pattern for inserting relative asset.src urls into _baseUrl and _joinUrl
   //R.baseUrl  = '';      // Example: 'http://www.server.com/scripts/%{s}.js';  <--  the first occurrence of Req.urlToken gets replaced by an `asset`'s `.src` value.
-  //R.joinUrl  = '';      // Example: 'http://www.server.com/join/%{s}'              (if the urlToken is missing, it gets appended to the Url)
-  //R.joint    = '';
+  //R.joinUrl  = '';      // Example: 'http://www.server.com/join/%{s}'              (...if the urlToken is missing, it gets appended to the Url)
+  //R.joint    = '';      // Example: '|'     string/token to seperate the script URL stubs as they are appended to the joinUrl.
   R.joinLim = 1;        // minimum number of items in the _joinBuffer for joining to occur
 
 
@@ -369,7 +399,7 @@
     return /^(\.?\/|https?:)/.test(url) ? url : _baseUrl.replace(s, url);
   };
 
-  // Req.fixUrl() is used by _bufferFlush(), and returns the joinURL stub for the given asset.
+  // Req.getJoinUrl() is used by _bufferFlush() to get the joinUrl "stub" for the given asset.
   // Defaults to returning whatever comes after _baseUrl in a normalized asset.src
   R.getJoinUrl = function (asset)
   {
@@ -380,14 +410,15 @@
   // Req's asset database
   R.assets  = {
   /*
-      'My Asset ID' : {  // Friendly id/name for this asset. Each resource is also indexed by it's URL (the `src` property)
+      'My Asset ID or URL' : {  // the URL - or friendly id/name for this asset.  (If the `src` property is empty this label is assumed to be the URL.)
         // Asset properties and their default values:
-        id:      'My Asset ID',                                     // Optional friendly id/name for the assset. (Only ever used when passing asset objects as paramters to the Req() function)
+        id:      'My Asset ID',                                     // Optional friendly id/name for the assset. (Only used when passing asset objects as paramters to the Req() function)
         req:     ['Asset name', 'Asset name 2'],                    // List of assets this asset depends on, each of which may depend on other assets, etc. etc.
         check:   function () { return !!window.myScriptObject; },   // Function to determine wheather this resource has alreay been loaded (via other means, such as, direct <script> tags, etc.)
-        src:     'js/myscript.js',                                  // The actual URL to the javascript file (this value is autogenerated )
-        charset: 'utf-8',                                           // charset -- if such nonsense if required for your scripts to run (common for mixed charset environments on old MSIE browsers).
-        join:    false                                              // can this asset be joined with others into a single HTTP request (see Req.joinUrl and Req.getJoinUrl, etc.)
+        src:     'js/myscript.js',                                  // The actual URL to the javascript file. (Relative URLs get normalized with Req.fixUrl and Req.baseUrl - while URLs starting with "http(s)://", "/", and "./" are left untouched)
+        charset: 'utf-8',                                           // Character encoding of the script file -- (common for mixed charset environments on old MSIE browsers which ignore server's HTTP headers).
+        onLoad:  function () { doStuff(); }                         // Callback (onload event handler) to run when the asset has loaded for the first time. (Useful for running inits.)
+        join:    false                                              // Can this asset be joined with others into a single HTTP request (see Req.joinUrl and Req.getJoinUrl, etc.)
       }
   */
   };
@@ -395,5 +426,3 @@
 
 
 })();
-
-
