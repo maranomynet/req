@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- encoding: utf-8 -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Req-js demo</title>
+  <style type="text/css">
+    pre#log {
+      padding: 5px 10px;
+      background: #eef;
+      border: 1px solid #aac;
+    }
+    div.green {
+      background-color: #cfc;
+      color: #000;
+      padding: 5px 10px;
+    }
+  </style>
+
+  <script src="../req.js"></script>
+  <script> 
+    // create a dependency database for jQuery UI
+    Req.assets = {
+        'jquery': {
+            src: 'http://code.jquery.com/jquery-latest.js',
+            onload: function(){
+                var $ = jQuery.noConflict(); // be strict about jQuery usage.
+                ;;;window.console&&console.log( [$] );
+                $.fn.Req = function(){
+                  var args = arguments, t = this;
+                  if (t.length) {
+                    Req.apply(null, $.map(args, function(a){ return $.isFunction(a) ? function(){a.call(t);} : a; }) );
+                  }
+                  return t;
+                };
+              }
+          },
+        'ui.core':        { src: 'ui.core.min.js',         req: ['jquery'] },
+        'ui.draggable':   { src: 'ui.draggable.min.js',    req: ['ui.core'] },
+        'ui.droppable':   { src: 'ui.droppable.min.js',    req: ['ui.draggable'] },
+        'ui.resizable':   { src: 'ui.resizable.min.js',    req: ['ui.core'] },
+        'ui.selectable':  { src: 'ui.selectable.min.js',   req: ['ui.core'] },
+        'ui.sortable':    { src: 'ui.sortable.min.js',     req: ['ui.draggable'] },
+        'ui.accordion':   { src: 'ui.accordion.min.js',    req: ['ui.core'] },
+        'ui.dialog':      { src: 'ui.dialog.min.js',       req: ['ui.core'] },
+        'ui.slider':      { src: 'ui.slider.min.js',       req: ['ui.core'] },
+        'ui.tabs':        { src: 'ui.tabs.min.js',         req: ['ui.core'] },
+        'ui.datepicker':  { src: 'ui.datepicker.min.js',   req: ['jquery'] },
+        'ui.progressbar': { src: 'ui.progressbar.min.js',  req: ['ui.core'] },
+        'ui.fxcore':      { src: 'effects.core.min.js',    req: ['jquery'] },
+        'ui.fxblind':     { src: 'effects.blind.min.js',   req: ['ui.fxcore'] }
+        // ...etc. for the rest of the jQuery UI effects
+      };
+
+    // define a URL prefix for resolving the relative ".src" urls in the assets above
+    Req.baseUrl = 'http://jquery-ui.googlecode.com/svn/tags/1.7.2/ui/minified/';
+
+  </script>
+
+
+</head>
+<body>
+
+  <h1>Req-js demo</h1>
+  <p>This demo defines a simple asset dependency database for the jQuery and jQuery UI libraries - which it then uses to request the required scripts before doing some simple log operations.</p>
+  <pre id="log">Log messages will appear here.</pre>
+  <div id="ispresent">&lt;div id="ispresent" /></div>
+  <p><a href="#" onclick="document.location='view-source:'+document.location.href;return false;">View-source</a> to learn how it's done, and use Firebug to inspect which <code>&lt;script /></code>s have been added to the <code>&lt;head></code> block.</p>
+
+  <script> 
+    Req(
+      // Require assets from our Req.assets database:
+      'ui.slider',
+      'ui.sortable',
+
+      // Also require some file URLs not defined in the database:
+      '../../external/bgiframe/jquery.bgiframe.min.js',  // this relative URL gets appended to Req.baseUrl 
+      './demo.js',                                  // The "./" prefix bypasses Req.baseUrl to load a locally hosted file.
+
+      // Callback to do stuff once the above files have loaded
+      function(){
+          var $ = jQuery,
+              log = $('#log').html('Log:\n------------\n');
+
+          if ($.fn.slider) { log.append('`$.fn.slider` has loaded.\n'); }
+          if ($.fn.sortable) { log.append('`$.fn.sortabale` has loaded.\n'); }
+          if ($.fn.bgIframe) { log.append('`$.fn.bgIframe` has loaded.\n'); }
+          if (!$.fn.tabs) { log.append('However, `$.fn.tabs` not present yet.\n'); }
+
+          // use the $.fn.Req plugin defined by the "jquery" asset's `onload` function above
+          $('div#ispresent')
+              .Req('ui.tabs', function(){
+                  this  // `this` is the jQuery collection that $.fn.Req() was called on.
+                      .addClass('green')
+                      .append(' is present!');
+                  log
+                      .append('--------\n')
+                      .append('Found &lt;div id="ispresent" />\n');
+                  if ($.fn.tabs) { log.append('and now `$.fn.tabs` has loaded. (Note the nested call to Req() :-)\n'); }
+                });
+
+          $('div#notpresent')
+              // Note that the `ui.dialog` script will not be loaded because there's no `div#notpresent` found.
+              .Req('ui.dialog', function(){
+                  log.append('This message should not print because there is no &lt;div id="ispresent" />.');
+                });
+        },
+
+      // Another callback... (you can pass a mixture of callbacks, URLs and asset references (or even asset objects) in any order to the Req() function!)
+      function(){
+          jQuery('#log')
+              .append('--------\n')
+              .append('This message appears last, because nested calls to Req() jump to the front of the loading queue.');
+        }
+
+    ); // end Req()
+
+  </script>
+</body>
+</html>

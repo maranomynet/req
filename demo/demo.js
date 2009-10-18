@@ -1,0 +1,1 @@
+jQuery('#log').append('Locally hosted demo.js loaded!\n');
