@@ -191,7 +191,7 @@
           {
             if (_joinBuffer[i].src)
             {
-              _concatUrls.unshift( R.getJoinUrl(_joinBuffer[i]) );
+              _concatUrls.unshift( R.getJoinStub(_joinBuffer[i]) );
             }
           }
           asset = {
@@ -397,9 +397,9 @@
     return /^(\.?\/|https?:)/.test(url) ? url : _baseUrl.replace(s, url);
   };
 
-  // Req.getJoinUrl() is used by _bufferFlush() to get the joinUrl "stub" for the given asset.
+  // Req.getJoinStub() is used by _bufferFlush() to get the joinUrl "stub" for the given asset.
   // Defaults to returning whatever comes after _baseUrl in a normalized asset.src
-  R.getJoinUrl = function (asset)
+  R.getJoinStub = function (asset)
   {
     return asset.src.replace(_baseUrl.split(s)[0], '');
   };
@@ -416,7 +416,7 @@
         src:     'js/myscript.js',                                  // The actual URL to the javascript file. (Relative URLs get normalized with Req.fixUrl and Req.baseUrl - while URLs starting with "http(s)://", "/", and "./" are left untouched)
         charset: 'utf-8',                                           // Character encoding of the script file -- (common for mixed charset environments on old MSIE browsers which ignore server's HTTP headers).
         onLoad:  function () { doStuff(); }                         // Callback (onload event handler) to run when the asset has loaded for the first time. (Useful for running inits.)
-        join:    false                                              // Can this asset be joined with others into a single HTTP request (see Req.joinUrl and Req.getJoinUrl, etc.)
+        join:    false                                              // Can this asset be joined with others into a single HTTP request (see Req.joinUrl and Req.getJoinStub, etc.)
       }
   */
   };
