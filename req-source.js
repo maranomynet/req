@@ -143,8 +143,6 @@
               {
                 // mark it as _processed
                 asset._processed = 1;
-                // enforce that the asset has .id
-                asset.id = assetId; 
                 // NOTE: Some assets may have no URL themselves - only a list of requirements.
                 // If there is a .src (URL), however, then...
                 if (asset.src)
