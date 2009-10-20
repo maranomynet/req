@@ -11,9 +11,9 @@ The concept is loosly based on [JSLoad][1] with some ideas from [Dojo.require][2
 
 It's stable and throroughly tested in production environment on over one hundred websites since 2008.
 
-[1]: http://www.instructables.com/blog/B2OLM73F5LDFN2Z/
-[2]: http://docs.dojocampus.org/dojo/require
-[3]: http://www.yuiblog.com/blog/2009/09/29/yui-3-0-0/
+  [1]: http://www.instructables.com/blog/B2OLM73F5LDFN2Z/
+  [2]: http://docs.dojocampus.org/dojo/require
+  [3]: http://www.yuiblog.com/blog/2009/09/29/yui-3-0-0/
 
 
 ### Key Features:
@@ -147,7 +147,7 @@ Asset objects may contain the following properties:
 :   Minimum number of consequtive joinable items needed for joining to occur. (Otherwise fall back to normal single-file loading.)
 
 **`Req.fixUrl`**  (Function)
-:   Function used internally to normalize assset `.src` values into real URLs<br />
+:   Function used internally to normalize assset `.src` values into real URLs.<br />
     Accepts a raw URL as a parameter, and returns a "fixed" (normalized) URL.<br />
     Default behaviour: Relative paths are supplimented with the `baseUrl`. Other URLs are left untouched.
 
@@ -171,7 +171,7 @@ Asset objects may contain the following properties:
 
 **Documentation home:**
 
-  * <http://mar.anomynet/entries/2009/>
+  * <http://mar.anomynet/entry/2009/10/20/23.39.22/>
 
 **Source updates:**
 
@@ -183,9 +183,9 @@ Asset objects may contain the following properties:
 
 ## Copyright & Licencing
 
-  Copyright (c) 2009 [Már Örlygsson][mar] and [Hugsmiðjan ehf][hsm].
+Copyright (c) 2009 [Már Örlygsson][mar] and [Hugsmiðjan ehf][hsm].
 
-  Dual licensed under a [MIT licence][1] and [GPL 2.0][2] (or above).
+Dual licensed under a [MIT licence][1] and [GPL 2.0][2] (or above).
 
   [1]: http://en.wikipedia.org/wiki/MIT_License
   [2]: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
