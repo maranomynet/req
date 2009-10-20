@@ -1,10 +1,10 @@
 <!-- encoding: utf-8 -->
 
-# Req-js - javascript lazy-loading and dependency managment made easy
+# Req.js - javascript lazy-loading and dependency managment made easy
 
 _Version: 1.0_
 
-Req-js is a simple, easy to use, full-featured library to handle lazy-loading and dependency management of Javascript.
+Req.js is a simple, easy to use, full-featured library to handle lazy-loading and dependency management of Javascript.
 It's a standalone javascript library (no dependencies) and defines only a single object `Req` in the global scope.
 
 The concept is loosly based on [JSLoad][1] with some ideas from [Dojo.require][2] and early [YUI 3.0 alphas][3] thrown into the mix.
@@ -39,7 +39,7 @@ Also:
 
 ## Documentation
 
-For a crash course in using Req-js, visit the **[demo page](demo/req-demo.html)** and inspect its source code.
+For a crash course in using Req.js, visit the **[demo page](demo/req-demo.html)** and inspect its source code.
 
 ### Using the `Req()` function;
 
