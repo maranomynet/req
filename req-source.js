@@ -1,20 +1,21 @@
-/*
+/* encoding: utf-8
+
   ****  Req-js - javascript lazy-loading and dependency managment made easy  ****
 
-  Version 1.0
+  Version: 1.0
 
-  Copyright (c) 2009 Hugsmiðjan ehf. (http://www.hugsmidjan.is)
-    by Már Örlygsson  (http://mar.anomy.net/  --  mar.nospam[at]anomy[dot]net)
+  Copyright (c) 2009 HugsmiÃ°jan ehf. (http://www.hugsmidjan.is)
+    by MÃ¡r Ã–rlygsson  (http://mar.anomy.net/  --  mar.nospam[at]anomy[dot]net)
 
   Dual licensed under a MIT licence (http://en.wikipedia.org/wiki/MIT_License)
   and GPL 2.0 or above (http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
 -----------------------------------------------------------------------------
 
-  Demo: 
+  Demo:
     * <./demo/req-demo.html>
 
-  Documentation: 
+  Documentation:
     * <.docs/req-docs.html>
     * <http://mar.anomynet/entries/2009/>
 
@@ -26,7 +27,7 @@
 
   TODO (developer's notes):
     * Support also loading CSS files.
-    * Look into doing parallel downloading (while ensuring execution order) 
+    * Look into doing parallel downloading (while ensuring execution order)
       with DOM Node injection in normal browsers but using 'defer' in MSIE
       As per suggestions in this article:
           <http://www.stevesouders.com/blog/2009/04/27/loading-scripts-without-blocking/>
@@ -58,7 +59,7 @@
         for (var i=0,l=queueStub.length; i<l; i++)
         {
           var asset = queueStub[i];
-         
+
           if (typeof asset == 'function')
           {
             // push functions onto the _fixedQueueStub and do nothing further. - Next please!
@@ -115,7 +116,7 @@
                   asset.req = [req];
                 }
               }
-              // if there are any dependencies listed (req), then (recursively) run that Array through _prepQueue 
+              // if there are any dependencies listed (req), then (recursively) run that Array through _prepQueue
               // and append the normalized/_processed results to the _fixedQueueStub.
               req && _fixedQueueStub.push.apply( _fixedQueueStub, _prepQueue(asset.req) );
               // finally push the asset onto the _fixedQueueStub
@@ -223,7 +224,7 @@
             {
               // make sure the asset is joinable, and hasn't _alreadyBeenInJoinBuffer and then...
               // stash it away in the _joinBuffer for later processing - en masse.
-              // NOTE: (we do this even if the asset doesn't have a .src - because it might be a group-asset 
+              // NOTE: (we do this even if the asset doesn't have a .src - because it might be a group-asset
               //       defining a bunch of `.req`s,  and even have an `.onload` event that needs to be run
               //       at the appropriate hour.
               if ((asset.join===true || !asset.src)  &&  !asset._alreadyBeenInJoinBuffer)
@@ -286,7 +287,7 @@
       _headElm,    // cached reference to the <head> element
       _baseUrl,    // cached *normalized* value of Req.baseUrl
       _joinUrl,    // cached *normalized* value of Req.joinUrl
-      s,           // cached value of Req.urlToken  
+      s,           // cached value of Req.urlToken
 
 
 
