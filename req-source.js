@@ -1,80 +1,35 @@
 /*
-  **** Req-js ****
+  ****  Req-js - javascript lazy-loading and dependency managment made easy  ****
 
   Version 1.0
-  Copyright (c) 2009 Már Örlygsson <mar.nospam [at] anomy [dot] net>
-  - Dual licensed under the MIT and GPL licenses.
+
+  Copyright (c) 2009 Hugsmiðjan ehf. (http://www.hugsmidjan.is)
+    by Már Örlygsson  (http://mar.anomy.net/  --  mar.nospam[at]anomy[dot]net)
+
+  Dual licensed under a MIT licence (http://en.wikipedia.org/wiki/MIT_License)
+  and GPL 2.0 or above (http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
 -----------------------------------------------------------------------------
 
-  Simple, easy to use, full-featured module to handle lazy-loading and dependency management of Javascript.
-  Standalone (no depeneencies) and defines only a single object `Req` in the global scope.
+  Demo: 
+    * <./demo/req-demo.html>
 
-  Concept based on JSLoad: http://www.instructables.com/blog/B2OLM73F5LDFN2Z/ with some ideas from Dojo.require and YUI 3.0 thrown into the mix.
+  Documentation: 
+    * <.docs/req-docs.html>
+    * <http://mar.anomynet/entries/2009/>
 
-  Key Features:
-    * Loads scripts asyncronously, with callbacks ...
-       * Ensuring all scripts execute in the correct order.
-    * Resolves and loads script dependencies.
-       * Gracefully handles circular dependency rules.
-    * Avoids loading the same script twice.
-       * Supports custom checks for the pre-existence of each script asset.
-    * Allows mixing of local and remotely-hosted scripts.
-    * Supports nested calls.
-    * Allows for joining multiple assets into one "combo" HTTP request. (if supported by your server)
-
-    * Highly configurable.
-    * Cross-browser and no external dependencies.
-    * Fast (no evals)
-    * Tiny! (less than 1 kB gzipped)
+  Get updates from:
+    * <http://github.com/maranomynet/req/>
+    * <git://github.com/maranomynet/req.git>
 
 -----------------------------------------------------------------------------
 
-  Usage crash-course:
-
-      Req.baseUrl = '/js/';
-
-      // (See documentation for Req.assets objects, way deep below.)
-      Req.assets['base library'] = {
-        src: 'baselib.js',
-        check: function(){ return !!window.baseLib; }
-      };
-      Req.assets['my script'] = {
-        src: 'myscript.js',
-        req: ['base library'],
-        check: function(){ return !!window.myScript; }
-      };
-
-      var asset1 =  'my script',
-          asset2 =  'http://other.server.com/js/script.js',
-          asset3 = { 
-              src: 'http://yet.another.server.com/js/otherscript.js',
-              req: ['baselib.js']
-              check: function(){ return !!window.otherScript; }
-            },
-          callback = function(){ alert('Do stuff with `my script` and `asset`'); },
-          callback = function(){ alert('Do stuff with `my script` and `asset` and `asset2`); };
-
-      Req(
-          asset,
-          asset2,
-          callback,
-          asset2,
-          callback2
-        );
-
-      // Subsequent calls to `Req`, place assets at the front of the processing queue.
-      // This makes nested `Req` calls possible.
-      Req('run-first.js');
-      // ...unless `true` is provided as a first parameter,
-      // in which case the assets are appended to the processing queue.
-      Req(true, 'run-last.js');
-
------------------------------------------------------------------------------
-
-  TODO:
-    * Look into doing parallel downloading with DOM Node injection in normal browsers but using 'defer' in MSIE
-      As per suggestions in this article: http://www.stevesouders.com/blog/2009/04/27/loading-scripts-without-blocking/
+  TODO (developer's notes):
+    * Support also loading CSS files.
+    * Look into doing parallel downloading (while ensuring execution order) 
+      with DOM Node injection in normal browsers but using 'defer' in MSIE
+      As per suggestions in this article:
+          <http://www.stevesouders.com/blog/2009/04/27/loading-scripts-without-blocking/>
     * Look into making assets groupable - so that each group has its own baseUrl and joining rules/parameters.
 
 
@@ -410,13 +365,13 @@
   /*
       'My Asset ID or URL' : {  // the URL - or friendly id/name for this asset.  (If the `src` property is empty this label is assumed to be the URL.)
         // Asset properties and their default values:
-        id:      'My Asset ID',                                     // Optional friendly id/name for the assset. (Only used when passing asset objects as paramters to the Req() function)
         req:     ['Asset name', 'Asset name 2'],                    // List of assets this asset depends on, each of which may depend on other assets, etc. etc.
         check:   function () { return !!window.myScriptObject; },   // Function to determine wheather this resource has alreay been loaded (via other means, such as, direct <script> tags, etc.)
         src:     'js/myscript.js',                                  // The actual URL to the javascript file. (Relative URLs get normalized with Req.fixUrl and Req.baseUrl - while URLs starting with "http(s)://", "/", and "./" are left untouched)
         charset: 'utf-8',                                           // Character encoding of the script file -- (common for mixed charset environments on old MSIE browsers which ignore server's HTTP headers).
-        onLoad:  function () { doStuff(); }                         // Callback (onload event handler) to run when the asset has loaded for the first time. (Useful for running inits.)
-        join:    false                                              // Can this asset be joined with others into a single HTTP request (see Req.joinUrl and Req.getJoinStub, etc.)
+        onload:  function () { doStuff(); },                        // Callback (onload event handler) to run when the asset has loaded for the first time. (Useful for running inits.)
+        join:    false,                                             // Can this asset be joined with others into a single HTTP request (see Req.joinUrl and Req.getJoinStub, etc.)
+        id:      'My Asset ID'                                      // Optional friendly id/name for the assset. (Only used when passing asset objects as paramters to the Req() function)
       }
   */
   };

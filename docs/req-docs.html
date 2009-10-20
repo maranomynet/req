@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- encoding: utf-8 -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="is">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Req-js Documentation</title>
+  <style type="text/css">
+    body {
+      background-color: #fff;
+      color: #000;
+      margin: 0;
+      padding: 1em 10% 4em 10%;
+      font-family: sans-serif;
+    }
+    code {
+      padding: 0 2px;
+      background-color: #f2f2f2;
+      font-family: monospace;
+      font-size: 1.2em;
+    }
+    h2 code,
+    h3 code {
+      background-color: transparent;
+      font-size: 1.4em;
+    }
+    dt {
+      color: #888;
+    }
+    dt strong code {
+      color: #000;
+      margin-right: .5em;
+    }
+    dd {
+      margin-bottom: 1em;
+    }
+    hr {
+      margin-top: 2em;
+    }
+    pre {
+      background-color: #f2f2f2;
+      padding: 5px 2em;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+    }
+  </style>
+
+</head>
+<body>
+
+
+
+<!-- BEGIN: Markdown generated HTML -->
+
+
+
+
+<!-- encoding: utf-8 -->
+
+<h1>Req-js - javascript lazy-loading and dependency managment made easy</h1>
+
+<p><em>Version: 1.0</em></p>
+
+<p>Req-js is a simple, easy to use, full-featured library to handle lazy-loading and dependency management of Javascript.
+It's a standalone javascript library (no dependencies) and defines only a single object <code>Req</code> in the global scope.</p>
+
+<p>The concept is loosly based on <a href="http://en.wikipedia.org/wiki/MIT_License">JSLoad</a> with some ideas from <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">Dojo.require</a> and early <a href="http://www.yuiblog.com/blog/2009/09/29/yui-3-0-0/">YUI 3.0 alphas</a> thrown into the mix.</p>
+
+<p>It's stable and throroughly tested in production environment on over one hundred websites since 2008.</p>
+
+<h3>Key Features:</h3>
+
+<ul>
+<li>Loads scripts asyncronously, with callbacks ...
+
+<ul>
+<li>Ensuring all scripts execute in the correct order.</li>
+</ul></li>
+<li>Resolves and loads script dependencies.
+
+<ul>
+<li>Handles circular dependencies gracefully.</li>
+</ul></li>
+<li>Avoids loading the same script twice.
+
+<ul>
+<li>Supports custom checks for the pre-presence of each script asset.</li>
+</ul></li>
+<li>Allows mixing of local and remotely-hosted scripts.</li>
+<li>Supports nested calls.</li>
+<li>Allows for joining multiple assets into one "combo" HTTP request. (if supported by your server)</li>
+</ul>
+
+<p>Also:</p>
+
+<ul>
+<li>Highly configurable.</li>
+<li>Cross-browser and no external dependencies.</li>
+<li>Fast (no evals)</li>
+<li>Tiny! (less than 1 kB gzipped)</li>
+</ul>
+
+<hr />
+
+<h2>Documentation</h2>
+
+<p>For a crash course in using Req-js, visit the <strong><a href="demo/req-demo.html">demo page</a></strong> and inspect its source code.</p>
+
+<h3>Using the <code>Req()</code> function;</h3>
+
+<p>The library's core function, <code>Req()</code>, accepts any number of parameters.</p>
+
+<p>The parameters may be a combination of:</p>
+
+<ul>
+<li><code>String</code>   - Script URLs (either absolute or relative).</li>
+<li><code>Function</code> - Callback functions that run as soon as the preceeding scripts have loaded.</li>
+<li><code>Object</code>   - "Asset objects" that contain a script URL, charset info, dependency list, etc. (see below for more info).</li>
+<li><code>String</code>   - "Asset object ID"s that refer to a previously defined "Asset object".</li>
+</ul>
+
+<p>All parameters are processed (i.e. loaded or run) in the order they're passed.</p>
+
+<p><code>Req()</code> maintains a single processing queue, and repeated calls to <code>Req()</code> stack their parameter list to the front of the master queue -- like so:</p>
+
+<pre><code>Req(A, B, C, function(){ Req(D, E); }, F);
+Req(G, H, I);
+
+// Will be processed in this order:
+//   G, H, I,   A, B, C,   D, E,   F
+</code></pre>
+
+<p>However, an optional first parameter of <code>true</code> will instruct <code>Req()</code> to <em>append</em> those parameters to the master queue -- like so:</p>
+
+<pre><code>Req(A, B, C);
+Req(D, E, F);
+Req(true, G, H, I);
+
+// Will be processed in this order:
+//   D, E, F,   A, B, C,   G, H, I  
+</code></pre>
+
+<h3>"Asset objects" and <code>Req.assets</code></h3>
+
+<p><code>Req()</code> keeps a database of "asset objects" to track which scripts have been loaded, what their dependencies are, etc.</p>
+
+<p>Every URL you pass as a parameter is automatically turned into a simple asset object and stored in <code>Req.assets</code>.</p>
+
+<pre><code>var myurl = 'http://code.jquery.com/jquery-latest.js';
+
+alert ( typeof Req.assets[myurl] );  // 'undefined'
+
+Req( myurl, mycallbackfn );
+
+var myAsset = Req.assets[myurl];
+alert ( typeof myAsset );      // "object"
+alert ( myAsset.toSource() );  // { src: 'http://code.jquery.com/jquery-latest.js' }
+</code></pre>
+
+<p>You can store asset objects under a friendly id/label in the <code>Req.assets</code> database, and then refer to the asset using that label...</p>
+
+<pre><code>Req.assets['jQuery latest'] = {
+    src: 'http://code.jquery.com/jquery-latest.js'
+  };
+
+Req( 'jQuery latest', mycallbackfn );
+</code></pre>
+
+<h3>Asset object properties</h3>
+
+<p>Asset objects may contain the following properties:</p>
+
+<dl>
+<dt><strong><code>src</code></strong>  (String)</dt>
+<dd>The actual URL to the javascript file.<br />
+Relative URLs get normalized with <code>Req.fixUrl</code> and <code>Req.baseUrl</code> - while URLs starting with <code>http(s)://</code>, <code>/</code>, and <code>./</code> are left untouched.</dd>
+
+<dt><strong><code>check</code></strong>  (Function)</dt>
+<dd>Function that returns true/false that determine whether this resource has alreay been loaded (via other means, such as, direct <code>&lt;script&gt;</code> tags, etc.)</dd>
+
+<dt><strong><code>req</code></strong>  (Array)</dt>
+<dd>List of assets objects (or asset IDs or URLs) that this asset depends on -- each of which may depend on other assets, etc. etc.</dd>
+
+<dt><strong><code>onload</code></strong>  (Function)</dt>
+<dd>Callback function (onload event handler) to run when the asset has loaded for the first time. (Useful for running inits methods.)</dd>
+
+<dt><strong><code>charset</code></strong>  (String)</dt>
+<dd>Character encoding of the script file - e.g. <code>"utf-8"</code>. (Useful for mixed charset environments on old MSIE browsers - which ignore HTTP charset headers sent by server.)</dd>
+
+<dt><strong><code>join</code></strong>  (Boolean - default: <code>false</code>)</dt>
+<dd>Can this asset be joined with others into a single HTTP request (see <code>Req.joinUrl</code> and <code>Req.getJoinUrl</code> properties below).</dd>
+
+<dt><strong><code>id</code></strong>  (String)</dt>
+<dd>Friendly id/name for the assset. (Only used when passing asset objects as parameters to the Req() function)</dd>
+</dl>
+
+<h3><code>Req</code> configuration properties</h3>
+
+<dl>
+<dt><strong><code>Req.urlToken</code></strong>  (default: <code>'%{s}'</code>)</dt>
+<dd>Replacement pattern for inserting relative asset.src urls into _baseUrl and _joinUrl</dd>
+
+<dt><strong><code>Req.baseUrl</code></strong>  (default: <code>''</code>)</dt>
+<dd>URL string used for normalizing relative asset URLs<br />
+Example: <code>'http://www.server.com/scripts/%{s}.js'</code>  ... the first occurrence of <code>Req.urlToken</code> gets replaced by an <code>asset</code>'s <code>.src</code> value.  (If the urlToken is missing, it gets appended to the URL.)</dd>
+
+<dt><strong><code>Req.joinUrl</code></strong>  (default: <code>''</code>)</dt>
+<dd>URL string used for constructing "combo" URLs for joining multiple assets into a single HTTP request.<br />
+Example: <code>'http://www.server.com/join/?%{s}'</code> (See notes for <code>Req.baseUrl</code> above.)</dd>
+
+<dt><strong><code>Req.joint</code></strong>  (default: <code>''</code>)</dt>
+<dd>String token to seperate the script URL-stubs/labels as they get inserted into the <code>joinUrl</code>.<br />
+Example: <code>'|'</code>   ... which might result in a combo URL similar to this: <code>'http://www.server.com/join/?script1|script2|script3|script4'</code></dd>
+
+<dt><strong><code>Req.joinLim</code></strong>  (default: <code>1</code>)</dt>
+<dd>Minimum number of consequtive joinable items needed for joining to occur. (Otherwise fall back to normal single-file loading.)</dd>
+
+<dt><strong><code>Req.fixUrl</code></strong>  (Function)</dt>
+<dd>Function used internally to normalize assset <code>.src</code> values into real URLs<br />
+Accepts a raw URL as a parameter, and returns a "fixed" (normalized) URL.<br />
+Default behaviour: Relative paths are supplimented with the <code>baseUrl</code>. Other URLs are left untouched.</dd>
+
+<dt><strong><code>Req.getJoinUrl</code></strong>  (Function)</dt>
+<dd>Function used to get the combo URL-stub/label for the given asset.<br />
+Accepts an asset object as a parameter, and returns a combo URL-stub/label, that gets inserted (along with others) into the <code>joinUrl</code>.<br />
+Default behaviour: Returns whatever comes after <code>baseUrl</code> in a normalized asset URL.</dd>
+
+<dt><strong><code>Req.assets</code></strong>  (default: <code>{}</code>)</dt>
+<dd>Container (Object) for Asset objects (see info in a previous chapter).</dd>
+</dl>
+
+<hr />
+
+<h2>Downloads &amp; Links</h2>
+
+<p><strong>Download:</strong></p>
+
+<ul>
+<li><a href="http://github.com/maranomynet/req/archives/master">Download the latest version</a></li>
+</ul>
+
+<p><strong>Documentation home:</strong></p>
+
+<ul>
+<li><a href="http://mar.anomynet/entries/2009/">http://mar.anomynet/entries/2009/</a></li>
+</ul>
+
+<p><strong>Source updates:</strong></p>
+
+<ul>
+<li><a href="http://github.com/maranomynet/req/">http://github.com/maranomynet/req/</a></li>
+<li><a href="git://github.com/maranomynet/req.git">git://github.com/maranomynet/req.git</a></li>
+</ul>
+
+<hr />
+
+<h2>Copyright &amp; Licencing</h2>
+
+<p>Copyright (c) 2009 <a href="http://mar.anomy.net/">Már Örlygsson</a> and <a href="http://www.hugsmidjan.is">Hugsmiðjan ehf</a>.</p>
+
+<p>Dual licensed under a <a href="http://en.wikipedia.org/wiki/MIT_License">MIT licence</a> and <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL 2.0</a> (or above).</p>
+
+
+
+
+
+
+<!-- END: Markdown generated HTML -->
+
+
+
+
+
+
+</body>
+</html>
