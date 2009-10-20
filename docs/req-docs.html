@@ -66,14 +66,14 @@
 <p>Req.js is a simple, easy to use, full-featured library to handle lazy-loading and dependency management of Javascript.
 It's a standalone javascript library (no dependencies) and defines only a single object <code>Req</code> in the global scope.</p>
 
-<p>The concept is loosly based on <a href="http://en.wikipedia.org/wiki/MIT_License">JSLoad</a> with some ideas from <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">Dojo.require</a> and early <a href="http://www.yuiblog.com/blog/2009/09/29/yui-3-0-0/">YUI 3.0 alphas</a> thrown into the mix.</p>
+<p>The concept is loosely  based on <a href="http://en.wikipedia.org/wiki/MIT_License">JSLoad</a> with some ideas from <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">Dojo.require</a> and early <a href="http://www.yuiblog.com/blog/2009/09/29/yui-3-0-0/">YUI 3.0 alphas</a> thrown into the mix.</p>
 
-<p>It's stable and throroughly tested in production environment on over one hundred websites since 2008.</p>
+<p>It's stable and thoroughly tested in production environment on over one hundred websites since 2008.</p>
 
 <h3>Key Features:</h3>
 
 <ul>
-<li>Loads scripts asyncronously, with callbacks ...
+<li>Loads scripts asynchronously, with callbacks ...
 
 <ul>
 <li>Ensuring all scripts execute in the correct order.</li>
@@ -116,7 +116,7 @@ It's a standalone javascript library (no dependencies) and defines only a single
 
 <ul>
 <li><code>String</code>   - Script URLs (either absolute or relative).</li>
-<li><code>Function</code> - Callback functions that run as soon as the preceeding scripts have loaded.</li>
+<li><code>Function</code> - Callback functions that run as soon as the preceding scripts have loaded.</li>
 <li><code>Object</code>   - "Asset objects" that contain a script URL, charset info, dependency list, etc. (see below for more info).</li>
 <li><code>String</code>   - "Asset object ID"s that refer to a previously defined "Asset object".</li>
 </ul>
@@ -178,7 +178,7 @@ Req( 'jQuery latest', mycallbackfn );
 Relative URLs get normalized with <code>Req.fixUrl</code> and <code>Req.baseUrl</code> - while URLs starting with <code>http(s)://</code>, <code>/</code>, and <code>./</code> are left untouched.</dd>
 
 <dt><strong><code>check</code></strong>  (Function)</dt>
-<dd>Function that returns true/false that determine whether this resource has alreay been loaded (via other means, such as, direct <code>&lt;script&gt;</code> tags, etc.)</dd>
+<dd>Function that returns true/false that determine whether this resource has already been loaded (via other means, such as, direct <code>&lt;script&gt;</code> tags, etc.)</dd>
 
 <dt><strong><code>req</code></strong>  (Array)</dt>
 <dd>List of assets objects (or asset IDs or URLs) that this asset depends on -- each of which may depend on other assets, etc. etc.</dd>
@@ -193,7 +193,7 @@ Relative URLs get normalized with <code>Req.fixUrl</code> and <code>Req.baseUrl<
 <dd>Can this asset be joined with others into a single HTTP request (see <code>Req.joinUrl</code> and <code>Req.getJoinUrl</code> properties below).</dd>
 
 <dt><strong><code>id</code></strong>  (String)</dt>
-<dd>Friendly id/name for the assset. (Only used when passing asset objects as parameters to the Req() function)</dd>
+<dd>Friendly id/name for the asset. (Only used when passing asset objects as parameters to the Req() function)</dd>
 </dl>
 
 <h3><code>Req</code> configuration properties</h3>
@@ -211,21 +211,21 @@ Example: <code>'http://www.server.com/scripts/%{s}.js'</code>  ... the first occ
 Example: <code>'http://www.server.com/join/?%{s}'</code> (See notes for <code>Req.baseUrl</code> above.)</dd>
 
 <dt><strong><code>Req.joint</code></strong>  (default: <code>''</code>)</dt>
-<dd>String token to seperate the script URL-stubs/labels as they get inserted into the <code>joinUrl</code>.<br />
+<dd>String token to separate the script URL-stubs/labels as they get inserted into the <code>joinUrl</code>.<br />
 Example: <code>'|'</code>   ... which might result in a combo URL similar to this: <code>'http://www.server.com/join/?script1|script2|script3|script4'</code></dd>
 
 <dt><strong><code>Req.joinLim</code></strong>  (default: <code>1</code>)</dt>
-<dd>Minimum number of consequtive joinable items needed for joining to occur. (Otherwise fall back to normal single-file loading.)</dd>
+<dd>Minimum number of consecutive join-able items needed for joining to occur. (Otherwise fall back to normal single-file loading.)</dd>
 
 <dt><strong><code>Req.fixUrl</code></strong>  (Function)</dt>
-<dd>Function used internally to normalize assset <code>.src</code> values into real URLs.<br />
+<dd>Function used internally to normalize asset <code>.src</code> values into real URLs.<br />
 Accepts a raw URL as a parameter, and returns a "fixed" (normalized) URL.<br />
-Default behaviour: Relative paths are supplimented with the <code>baseUrl</code>. Other URLs are left untouched.</dd>
+Default behavior: Relative paths are supplemented with the <code>baseUrl</code>. Other URLs are left untouched.</dd>
 
 <dt><strong><code>Req.getJoinUrl</code></strong>  (Function)</dt>
 <dd>Function used to get the combo URL-stub/label for the given asset.<br />
 Accepts an asset object as a parameter, and returns a combo URL-stub/label, that gets inserted (along with others) into the <code>joinUrl</code>.<br />
-Default behaviour: Returns whatever comes after <code>baseUrl</code> in a normalized asset URL.</dd>
+Default behavior: Returns whatever comes after <code>baseUrl</code> in a normalized asset URL.</dd>
 
 <dt><strong><code>Req.assets</code></strong>  (default: <code>{}</code>)</dt>
 <dd>Container (Object) for Asset objects (see info in a previous chapter).</dd>
@@ -256,11 +256,11 @@ Default behaviour: Returns whatever comes after <code>baseUrl</code> in a normal
 
 <hr />
 
-<h2>Copyright &amp; Licencing</h2>
+<h2>Copyright &amp; Licensing</h2>
 
 <p>Copyright (c) 2009 <a href="http://mar.anomy.net/">Már Örlygsson</a> and <a href="http://www.hugsmidjan.is">Hugsmiðjan ehf</a>.</p>
 
-<p>Dual licensed under a <a href="http://en.wikipedia.org/wiki/MIT_License">MIT licence</a> and <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL 2.0</a> (or above).</p>
+<p>Dual licensed under a <a href="http://en.wikipedia.org/wiki/MIT_License">MIT license</a> and <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL 2.0</a> (or above).</p>
 
 
 

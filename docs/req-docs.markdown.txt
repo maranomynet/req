@@ -7,9 +7,9 @@ _Version: 1.0_
 Req.js is a simple, easy to use, full-featured library to handle lazy-loading and dependency management of Javascript.
 It's a standalone javascript library (no dependencies) and defines only a single object `Req` in the global scope.
 
-The concept is loosly based on [JSLoad][1] with some ideas from [Dojo.require][2] and early [YUI 3.0 alphas][3] thrown into the mix.
+The concept is loosely  based on [JSLoad][1] with some ideas from [Dojo.require][2] and early [YUI 3.0 alphas][3] thrown into the mix.
 
-It's stable and throroughly tested in production environment on over one hundred websites since 2008.
+It's stable and thoroughly tested in production environment on over one hundred websites since 2008.
 
   [1]: http://www.instructables.com/blog/B2OLM73F5LDFN2Z/
   [2]: http://docs.dojocampus.org/dojo/require
@@ -18,7 +18,7 @@ It's stable and throroughly tested in production environment on over one hundred
 
 ### Key Features:
 
-  * Loads scripts asyncronously, with callbacks ...
+  * Loads scripts asynchronously, with callbacks ...
      * Ensuring all scripts execute in the correct order.
   * Resolves and loads script dependencies.
      * Handles circular dependencies gracefully.
@@ -48,7 +48,7 @@ The library's core function, `Req()`, accepts any number of parameters.
 The parameters may be a combination of:
 
   * `String`   - Script URLs (either absolute or relative).
-  * `Function` - Callback functions that run as soon as the preceeding scripts have loaded.
+  * `Function` - Callback functions that run as soon as the preceding scripts have loaded.
   * `Object`   - "Asset objects" that contain a script URL, charset info, dependency list, etc. (see below for more info).
   * `String`   - "Asset object ID"s that refer to a previously defined "Asset object".
 
@@ -107,7 +107,7 @@ Asset objects may contain the following properties:
     Relative URLs get normalized with `Req.fixUrl` and `Req.baseUrl` - while URLs starting with `http(s)://`, `/`, and `./` are left untouched.
 
 **`check`**  (Function)
-:   Function that returns true/false that determine whether this resource has alreay been loaded (via other means, such as, direct `<script>` tags, etc.)
+:   Function that returns true/false that determine whether this resource has already been loaded (via other means, such as, direct `<script>` tags, etc.)
 
 **`req`**  (Array)
 :   List of assets objects (or asset IDs or URLs) that this asset depends on -- each of which may depend on other assets, etc. etc.
@@ -122,7 +122,7 @@ Asset objects may contain the following properties:
 :   Can this asset be joined with others into a single HTTP request (see `Req.joinUrl` and `Req.getJoinUrl` properties below).
 
 **`id`**  (String)
-:   Friendly id/name for the assset. (Only used when passing asset objects as parameters to the Req() function)
+:   Friendly id/name for the asset. (Only used when passing asset objects as parameters to the Req() function)
 
 
 
@@ -140,21 +140,21 @@ Asset objects may contain the following properties:
     Example: `'http://www.server.com/join/?%{s}'` (See notes for `Req.baseUrl` above.)
 
 **`Req.joint`**  (default: `''`)
-:   String token to seperate the script URL-stubs/labels as they get inserted into the `joinUrl`.<br />
+:   String token to separate the script URL-stubs/labels as they get inserted into the `joinUrl`.<br />
     Example: `'|'`   ... which might result in a combo URL similar to this: `'http://www.server.com/join/?script1|script2|script3|script4'`
 
 **`Req.joinLim`**  (default: `1`)
-:   Minimum number of consequtive joinable items needed for joining to occur. (Otherwise fall back to normal single-file loading.)
+:   Minimum number of consecutive join-able items needed for joining to occur. (Otherwise fall back to normal single-file loading.)
 
 **`Req.fixUrl`**  (Function)
-:   Function used internally to normalize assset `.src` values into real URLs.<br />
+:   Function used internally to normalize asset `.src` values into real URLs.<br />
     Accepts a raw URL as a parameter, and returns a "fixed" (normalized) URL.<br />
-    Default behaviour: Relative paths are supplimented with the `baseUrl`. Other URLs are left untouched.
+    Default behavior: Relative paths are supplemented with the `baseUrl`. Other URLs are left untouched.
 
 **`Req.getJoinUrl`**  (Function)
 :   Function used to get the combo URL-stub/label for the given asset.<br />
     Accepts an asset object as a parameter, and returns a combo URL-stub/label, that gets inserted (along with others) into the `joinUrl`.<br />
-    Default behaviour: Returns whatever comes after `baseUrl` in a normalized asset URL.
+    Default behavior: Returns whatever comes after `baseUrl` in a normalized asset URL.
 
 **`Req.assets`**  (default: `{}`)
 :   Container (Object) for Asset objects (see info in a previous chapter).
@@ -181,11 +181,11 @@ Asset objects may contain the following properties:
 
 ---------
 
-## Copyright & Licencing
+## Copyright & Licensing
 
 Copyright (c) 2009 [Már Örlygsson][mar] and [Hugsmiðjan ehf][hsm].
 
-Dual licensed under a [MIT licence][1] and [GPL 2.0][2] (or above).
+Dual licensed under a [MIT license][1] and [GPL 2.0][2] (or above).
 
   [1]: http://en.wikipedia.org/wiki/MIT_License
   [2]: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
