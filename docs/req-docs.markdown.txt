@@ -39,7 +39,7 @@ Also:
 
 ## Documentation
 
-For a crash course in using Req.js, visit the **[demo page](demo/req-demo.html)** and inspect its source code.
+For a crash course in using Req.js, visit the **[demo page](../demo/req-demo.html)** and inspect its source code.
 
 ### Using the `Req()` function;
 

@@ -26,7 +26,6 @@
             src: 'http://code.jquery.com/jquery-latest.js',
             onload: function(){
                 var $ = jQuery.noConflict(); // be strict about jQuery usage.
-                ;;;window.console&&console.log( [$] );
                 $.fn.Req = function(){
                   var args = arguments, t = this;
                   if (t.length) {
@@ -66,7 +65,8 @@
   <p>This demo defines a simple asset dependency database for the jQuery and jQuery UI libraries - which it then uses to request the required scripts before doing some simple log operations.</p>
   <pre id="log">Log messages will appear here.</pre>
   <div id="ispresent">&lt;div id="ispresent" /></div>
-  <p><a href="#" onclick="document.location='view-source:'+document.location.href;return false;">View-source</a> to learn how it's done, and use Firebug to inspect which <code>&lt;script /></code>s have been added to the <code>&lt;head></code> block.</p>
+  <p><a href="#" onclick="document.location='view-source:'+document.location.href;return false;">View-source</a> to learn how it's done, and use Firebug to inspect which <code>&lt;script /></code>s have been added to the <code>&lt;head></code> block.<br />
+  See also the <a href="../docs/req-docs.html">documentation page</a> for more information.</p>
 
   <script> 
     Req(
