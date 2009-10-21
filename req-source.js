@@ -4,8 +4,9 @@
 
   Version: 1.0
 
-  Copyright (c) 2009 Hugsmiðjan ehf. (http://www.hugsmidjan.is)
-    by Már Örlygsson  (http://mar.anomy.net/  --  mar.nospam[at]anomy[dot]net)
+  Copyright (c) 2009
+    Már Örlygsson  (http://mar.anomy.net/) and
+    Hugsmiðjan ehf. (http://www.hugsmidjan.is)
 
   Dual licensed under a MIT licence (http://en.wikipedia.org/wiki/MIT_License)
   and GPL 2.0 or above (http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
@@ -17,7 +18,7 @@
 
   Documentation:
     * <.docs/req-docs.html>
-    * <http://mar.anomynet/entries/2009/>
+    * <http://mar.anomynet/entries/2009/10/20/23.39.22/>
 
   Get updates from:
     * <http://github.com/maranomynet/req/>

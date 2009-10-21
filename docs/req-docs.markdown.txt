@@ -167,7 +167,7 @@ Asset objects may contain the following properties:
 
 **Download:**
 
-  * [Download the latest version](http://github.com/maranomynet/req/archives/master)
+  * [Download the latest version](http://github.com/maranomynet/req/archives/master) (Zip)
 
 **Documentation home:**
 
