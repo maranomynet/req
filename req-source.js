@@ -265,8 +265,8 @@
                         _loadAsset[_onload] && _loadAsset[_onload]();
                         _loadAsset[_onload] = null; // why? See comment a couple of screenfuls up...^^^^
                       }
-                      // recurse!!
-                      _processNext();
+                      // recurse!! using setTimeout because Opera (as of 9.6 at least) doesn't process/run the scripts until *after* the onload handler has run... ack!
+                      setTimeout(function(){ _processNext(); }, 0);
                     }
                   };
                   _headElm.appendChild(scriptElm);
