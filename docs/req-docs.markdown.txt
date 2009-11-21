@@ -159,6 +159,10 @@ Asset objects may contain the following properties:
 **`Req.assets`**  (default: `{}`)
 :   Container (Object) for Asset objects (see info in a previous chapter).
 
+**`Req.charset`**  (default: `''`)
+:   A default `charset=""` attribute value for the `<script />` elements when they're inserted into the page.
+
+
 
 
 ---------

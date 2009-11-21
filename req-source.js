@@ -37,7 +37,7 @@
 
 */
 
-(function(){
+(function(undefined){
 
 // -------------------------------------------------------------------------------
 // Private Methods/Properties:
@@ -249,7 +249,7 @@
                 {
                   var scriptElm = document.createElement('script');
                   //scriptElm.defer = !0; // <--- DEBUG/Development leftovers
-                  if (asset.charset) { scriptElm.charset = asset.charset; }
+                  scriptElm.charset = asset.charset || R.charset || undefined;
                   scriptElm.src = asset.src;
                   scriptElm[_onload] = scriptElm[_onreadystatechange] = function()
                   {
@@ -341,6 +341,7 @@
 // Public (Overloadable) Methods/Properties:
 // -------------------------------------------------------------------------------
 
+  //R.charset  = null;    // Example: 'utf-8';  <--  the default charset="" attribute for the <script /> elements.
   //R.urlToken = '%{s}';  // replacement pattern for inserting relative asset.src urls into _baseUrl and _joinUrl
   //R.baseUrl  = '';      // Example: 'http://www.server.com/scripts/%{s}.js';  <--  the first occurrence of Req.urlToken gets replaced by an `asset`'s `.src` value.
   //R.joinUrl  = '';      // Example: 'http://www.server.com/join/%{s}'              (...if the urlToken is missing, it gets appended to the Url)
