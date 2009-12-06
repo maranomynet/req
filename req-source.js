@@ -37,7 +37,18 @@
 
 */
 
-(function(undefined){
+
+/*
+  Attempt to apply document.readyState support in FF3.5 and older. 
+  See more:
+   * http://webreflection.blogspot.com/2009/11/195-chars-to-help-lazy-loading.html
+   * http://groups.google.com/group/jquery-dev/browse_thread/thread/5aba1a1c2a7e53a7/e76736baf202f6e1
+*/
+(function(h,a,c,k){if(h[a]==null&&h[c]){h[a]="loading";h[c](k,c=function(){h[a]="complete";h.removeEventListener(k,c,!1)},!1)}})(document,"readyState","addEventListener","DOMContentLoaded");
+
+(function(_null, undefined){
+
+
 
 // -------------------------------------------------------------------------------
 // Private Methods/Properties:
@@ -321,19 +332,12 @@
     // Allow `true` as a first argument, to push the _queueStub onto the *end* of the _queue, for delay processing.
     _queue[appendToQueue===true?'push':'unshift'].apply(_queue, _queueStub);
 
-/** //FIXME: this setTimeout seems to screw up execution of `jQuery(document).ready(fn)`
-    //       (caused by bug in jQuery - fixed in jQuery 1.3.3)
-    //       postphone activating this bit until we're figured out the issue.
-
     // Delay first call to `_processNext();` slightly,
-    // to allow immediate subsequent `Req` calls to push assets in front of the `_queue`.
+    // to allow immediate subsequent `Req` calls to push their assets to the front of the `_queue`.
     setTimeout(function(){
-/**/
         // if, at that time, we're not waiting for a <script> to load, then start to _processNext item in the _queue
         if (!_isRunning) { _processNext(); }
-/**
-      }, 100);
-/**/
+      }, 0);
   };
 
 
