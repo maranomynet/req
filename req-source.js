@@ -194,7 +194,7 @@
             {
               // run the function
               asset();
-              asset = null; // set asset to null to avoid entering the condition block below (and save us a second `typeof` check)
+              asset = _null; // set asset to null to avoid entering the condition block below (and save us a second `typeof` check)
             }
           }
           // make sure this asset isn't `null` and isn't already loaded
@@ -217,7 +217,7 @@
                 if (asset[_onload])
                 {
                   asset[_onload]();
-                  asset[_onload] = null; // why? can't remember... sorry :-(  But probably to release memory, and make double-sure that .onload doesn't run twice.
+                  asset[_onload] = _null; // why? can't remember... sorry :-(  But probably to release memory, and make double-sure that .onload doesn't run twice.
                 }
               }
             }
@@ -249,13 +249,13 @@
                 {
                   var scriptElm = document.createElement('script');
                   //scriptElm.defer = !0; // <--- DEBUG/Development leftovers
-                  scriptElm.charset = asset.charset || R.charset || undefined;
+                  scriptElm.charset = asset.charset || R.charset || _null;
                   scriptElm.src = asset.src;
                   scriptElm[_onload] = scriptElm[_onreadystatechange] = function()
                   {
                     if (!scriptElm.readyState || /^(loaded|complete)$/.test(scriptElm.readyState))
                     {
-                      scriptElm[_onreadystatechange] = scriptElm[_onload] = null;
+                      scriptElm[_onreadystatechange] = scriptElm[_onload] = _null;
                       // define a list of what was just loaded (might be a bunch of assets, via a joined script url from the _joinBuffer)
                       var _loads = asset._loads || [asset];
                       for (var i=0, _loadAsset; (_loadAsset = _loads[i]); i++)
@@ -263,7 +263,7 @@
                         // loop through the list and mark each item as _loaded and run `.onload` callbacks as needed
                         _loadAsset._loaded = 1;
                         _loadAsset[_onload] && _loadAsset[_onload]();
-                        _loadAsset[_onload] = null; // why? See comment a couple of screenfuls up...^^^^
+                        _loadAsset[_onload] = _null; // why? See comment a couple of screenfuls up...^^^^
                       }
                       // recurse!! using setTimeout because Opera (as of 9.6 at least) doesn't process/run the scripts until *after* the onload handler has run... ack!
                       setTimeout(function(){ _processNext(); }, 0);
@@ -381,4 +381,4 @@
 
 
 
-})();
+})(null);
