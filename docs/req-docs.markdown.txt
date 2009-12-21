@@ -7,7 +7,7 @@ _Version: 1.0_
 Req.js is a simple, easy to use, full-featured library to handle lazy-loading and dependency management of Javascript.
 It's a standalone javascript library (no dependencies) and defines only a single object `Req` in the global scope.
 
-The concept is loosely  based on [JSLoad][1] with some ideas from [Dojo.require][2] and early [YUI 3.0 alphas][3] thrown into the mix.
+The concept is loosely based on [JSLoad][1] with some ideas from [Dojo.require][2] and early [YUI 3.0 alphas][3] thrown into the mix.
 
 It's stable and thoroughly tested in production environment on over one hundred websites since 2008.
 
@@ -54,7 +54,7 @@ The parameters may be a combination of:
 
 All parameters are processed (i.e. loaded or run) in the order they're passed.
 
-`Req()` maintains a single processing queue, and repeated calls to `Req()` stack their parameter list to the front of the master queue -- like so:
+`Req()` maintains a single processing queue, so nested and/or independently repeated calls to `Req()` add their list of requirements to the front of the master queue -- like so:
 
     Req(A, B, C, function(){ Req(D, E); }, F);
     Req(G, H, I);
@@ -189,10 +189,10 @@ Asset objects may contain the following properties:
 
 Copyright (c) 2009 [Már Örlygsson][mar] and [Hugsmiðjan ehf][hsm].
 
-Dual licensed under a [MIT license][1] and [GPL 2.0][2] (or above).
+Dual licensed under a [MIT license][mit] and [GPL 2.0][gpl] (or above).
 
-  [1]: http://en.wikipedia.org/wiki/MIT_License
-  [2]: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+  [mit]: http://en.wikipedia.org/wiki/MIT_License
+  [gpl]: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
   [hsm]: http://www.hugsmidjan.is
   [mar]: http://mar.anomy.net/
 
