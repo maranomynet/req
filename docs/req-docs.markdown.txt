@@ -175,7 +175,7 @@ Asset objects may contain the following properties:
 
 **Documentation home:**
 
-  * <http://mar.anomynet/entry/2009/10/20/23.39.22/>
+  * <http://mar.anomy.net/entry/2009/10/20/23.39.22/>
 
 **Source updates:**
 
