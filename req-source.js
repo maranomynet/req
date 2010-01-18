@@ -37,7 +37,6 @@
 
 */
 
-
 /*
   Attempt to apply document.readyState support in FF3.5 and older. 
   See more:
