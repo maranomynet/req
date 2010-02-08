@@ -258,14 +258,14 @@
                 if (asset.src)
                 {
                   var scriptElm = document.createElement('script');
-                  //scriptElm.defer = !0; // <--- DEBUG/Development leftovers
                   scriptElm.charset = asset.charset || R.charset || _null;
+                  ;;;scriptElm.className = 'Req'; // add a className marker - to make debugging easier. (;;;-prefixed lines get removed by dean.edwards' "Packer" minifier)
                   scriptElm.src = asset.src;
                   scriptElm[_onload] = scriptElm[_onreadystatechange] = function()
                   {
                     if (!scriptElm.readyState || /^(loaded|complete)$/.test(scriptElm.readyState))
                     {
-                      scriptElm[_onreadystatechange] = scriptElm[_onload] = _null;
+                      scriptElm[_onreadystatechange] = scriptElm[_onload] = _null; // this keeps browsers like Opera (<10) from running both the .onload and the .onreadystatechange handler.
                       // define a list of what was just loaded (might be a bunch of assets, via a joined script url from the _joinBuffer)
                       var _loads = asset._loads || [asset];
                       for (var i=0, _loadAsset; (_loadAsset = _loads[i]); i++)
