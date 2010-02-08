@@ -257,8 +257,9 @@
                 // ...check if it has .src and load it
                 if (asset.src)
                 {
-                  var scriptElm = document.createElement('script');
-                  scriptElm.charset = asset.charset || R.charset || _null;
+                  var scriptElm = document.createElement('script'),
+                      _charset = asset.charset || R.charset;
+                  _charset  &&  (scriptElm.charset = _charset);
                   ;;;scriptElm.className = 'Req'; // add a className marker - to make debugging easier. (;;;-prefixed lines get removed by dean.edwards' "Packer" minifier)
                   scriptElm.src = asset.src;
                   scriptElm[_onload] = scriptElm[_onreadystatechange] = function()
