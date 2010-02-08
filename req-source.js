@@ -27,7 +27,7 @@
 -----------------------------------------------------------------------------
 
   TODO (developer's notes):
-    * Support also loading CSS files.
+    * Support also loading CSS files. (maybe ??)
     * Look into doing parallel downloading (while ensuring execution order)
       with DOM Node injection in normal browsers but using 'defer' in MSIE
       As per suggestions in this article:
@@ -38,7 +38,7 @@
 */
 
 /*
-  Attempt to apply document.readyState support in FF3.5 and older. 
+  First: Attempt to apply document.readyState support in FF3.5 and older. 
   See more:
    * http://webreflection.blogspot.com/2009/11/195-chars-to-help-lazy-loading.html
    * http://groups.google.com/group/jquery-dev/browse_thread/thread/5aba1a1c2a7e53a7/e76736baf202f6e1
@@ -279,7 +279,11 @@
                       _processNext();
                     }
                   };
-                  _headElm.appendChild(scriptElm);
+                  // NOTE: if we were to use a simple `.insertBefore(scriptElm, _headElm.firstChild)` like done by jQuery
+                  // we'd get all the injected scriptElms in reverse order which would make debugging confusing.
+                  _firstBaseElm ?
+                      _headElm.insertBefore(scriptElm, _firstBaseElm): // silly hack, needed to avoid crash in MSIE 6.0 (see: http://dev.jquery.com/ticket/2709 )
+                      _headElm.appendChild(scriptElm);
                   // return without recursing ... because now we're playing The Waiting Game with the <script> we've just inserted
                   return;
                 }
@@ -296,6 +300,7 @@
 
       _isRunning,  // flag to indicate that _processNext is indeed running - only waiting for a <script> to load.
       _headElm,    // cached reference to the <head> element
+      _firstBaseElm, // reference to the first <base> element in the document - needed to avoid crash in MSIE 6.0 (see: http://dev.jquery.com/ticket/2709 ) 
       _baseUrl,    // cached *normalized* value of Req.baseUrl
       _joinUrl,    // cached *normalized* value of Req.joinUrl
       s,           // cached value of Req.urlToken
@@ -318,6 +323,7 @@
 
     // find + store/cache the <head> element
     _headElm = _headElm || document.getElementsByTagName('head')[0];
+    _firstBaseElm = _firstBaseElm || _headElm.getElementsByTagName('base')[0];
     // prep (normalize) the assets in the arguments array.
     var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
         i = _queueStub.length;
