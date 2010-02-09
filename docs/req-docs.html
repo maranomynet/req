@@ -24,6 +24,13 @@
       background-color: transparent;
       font-size: 1.4em;
     }
+    h2 {
+      margin-top: 0;
+    }
+    h3 {
+      margin-top: 2em;
+    }
+
     dt {
       color: #888;
     }
@@ -35,7 +42,7 @@
       margin-bottom: 1em;
     }
     hr {
-      margin-top: 2em;
+      margin-top: 3em;
     }
     pre {
       background-color: #f2f2f2;
@@ -68,7 +75,7 @@ It's a standalone javascript library (no dependencies) and defines only a single
 
 <p>The concept is loosely based on <a href="http://www.instructables.com/blog/B2OLM73F5LDFN2Z/">JSLoad</a> with some ideas from <a href="http://docs.dojocampus.org/dojo/require">Dojo.require</a> and early <a href="http://www.yuiblog.com/blog/2009/09/29/yui-3-0-0/">YUI 3.0 alphas</a> thrown into the mix.</p>
 
-<p>It's stable and thoroughly tested in production environment on over one hundred websites since 2008.</p>
+<p>It's stable and thoroughly tested in production environment on over one hundred live websites since 2008.</p>
 
 <h3>Key Features:</h3>
 
@@ -197,6 +204,8 @@ Relative URLs get normalized with <code>Req.fixUrl</code> and <code>Req.baseUrl<
 </dl>
 
 <h3><code>Req</code> configuration properties</h3>
+
+<p>The following properties are available to configure the basic behaviour of Req.js.</p>
 
 <dl>
 <dt><strong><code>Req.urlToken</code></strong>  (default: <code>'%{s}'</code>)</dt>

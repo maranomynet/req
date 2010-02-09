@@ -6,6 +6,18 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title>Req-js demo</title>
   <style type="text/css">
+    a {
+      font-weight: bold;
+      text-decoration: none;
+      border-bottom: 1px solid #00c;
+    }
+    a:hover,
+    a:focus,
+    a:active {
+      color: #c00;
+      border-bottom-color: #c00;
+    }
+
     pre#log {
       padding: 5px 10px;
       background: #eef;
@@ -20,12 +32,20 @@
 
   <script src="../req.js"></script>
   <script> 
-    // create a dependency database for jQuery UI
+    // ========================================================
+    //  Create a asset/dependency database for jQuery UI
+    // ========================================================
+
     Req.assets = {
+
         'jquery': {
-            src: 'http://code.jquery.com/jquery-latest.js',
-            onload: function(){
-                var $ = jQuery.noConflict(); // be strict about jQuery usage.
+            src:  'http://code.jquery.com/jquery-latest.js',
+
+            // script.onload handler that runs as soon as the script has loaded
+            onload:  function () {
+                // be strict about jQuery usage.
+                var $ = jQuery.noConflict();
+                // Setup an easy-to-use Req.js plugin for jQuery
                 $.fn.Req = function(){
                   var args = arguments, t = this;
                   if (t.length) {
@@ -35,24 +55,27 @@
                 };
               }
           },
-        'ui.core':        { src: 'ui.core.min.js',         req: ['jquery'] },
-        'ui.draggable':   { src: 'ui.draggable.min.js',    req: ['ui.core'] },
+
+        'ui.core':        { src: 'ui.core.min.js',         req: ['jquery']       },
+        'ui.draggable':   { src: 'ui.draggable.min.js',    req: ['ui.core']      },
         'ui.droppable':   { src: 'ui.droppable.min.js',    req: ['ui.draggable'] },
-        'ui.resizable':   { src: 'ui.resizable.min.js',    req: ['ui.core'] },
-        'ui.selectable':  { src: 'ui.selectable.min.js',   req: ['ui.core'] },
+        'ui.resizable':   { src: 'ui.resizable.min.js',    req: ['ui.core']      },
+        'ui.selectable':  { src: 'ui.selectable.min.js',   req: ['ui.core']      },
         'ui.sortable':    { src: 'ui.sortable.min.js',     req: ['ui.draggable'] },
-        'ui.accordion':   { src: 'ui.accordion.min.js',    req: ['ui.core'] },
-        'ui.dialog':      { src: 'ui.dialog.min.js',       req: ['ui.core'] },
-        'ui.slider':      { src: 'ui.slider.min.js',       req: ['ui.core'] },
-        'ui.tabs':        { src: 'ui.tabs.min.js',         req: ['ui.core'] },
-        'ui.datepicker':  { src: 'ui.datepicker.min.js',   req: ['jquery'] },
-        'ui.progressbar': { src: 'ui.progressbar.min.js',  req: ['ui.core'] },
-        'ui.fxcore':      { src: 'effects.core.min.js',    req: ['jquery'] },
-        'ui.fxblind':     { src: 'effects.blind.min.js',   req: ['ui.fxcore'] }
-        // ...etc. for the rest of the jQuery UI effects
+        'ui.accordion':   { src: 'ui.accordion.min.js',    req: ['ui.core']      },
+        'ui.dialog':      { src: 'ui.dialog.min.js',       req: ['ui.core']      },
+        'ui.slider':      { src: 'ui.slider.min.js',       req: ['ui.core']      },
+        'ui.tabs':        { src: 'ui.tabs.min.js',         req: ['ui.core']      },
+        'ui.datepicker':  { src: 'ui.datepicker.min.js',   req: ['jquery']       },
+        'ui.progressbar': { src: 'ui.progressbar.min.js',  req: ['ui.core']      },
+        'ui.fxcore':      { src: 'effects.core.min.js',    req: ['jquery']       },
+        'ui.fxblind':     { src: 'effects.blind.min.js',   req: ['ui.fxcore']    }
+
+         // ...etc. for the rest of the jQuery UI effects
+
       };
 
-    // define a URL prefix for resolving the relative ".src" urls in the assets above
+    // Finally: Define a URL prefix for resolving the relative ".src" urls in the assets above
     Req.baseUrl = 'http://jquery-ui.googlecode.com/svn/tags/1.7.2/ui/minified/';
 
   </script>
@@ -62,23 +85,28 @@
 <body>
 
   <h1>Req-js demo</h1>
-  <p>This demo defines a simple asset dependency database for the jQuery and jQuery UI libraries - which it then uses to request the required scripts before doing some simple log operations.</p>
-  <pre id="log">Log messages will appear here.</pre>
-  <div id="ispresent">&lt;div id="ispresent" /></div>
-  <p><a href="#" onclick="document.location='view-source:'+document.location.href;return false;">View-source</a> to learn how it's done, and use Firebug to inspect which <code>&lt;script /></code>s have been added to the <code>&lt;head></code> block.<br />
+  <p>This demo defines a simple asset dependency database for the jQuery and jQuery UI libraries - which it then uses to request the required scripts before doing some simple log operations. <a href="#" onclick="document.location='view-source:'+document.location.href;return false;">View-source</a> to learn how it's done, and use Firebug to inspect which <code>&lt;script /></code>s have been added to the <code>&lt;head></code> block.<br />
   See also the <a href="../docs/req-docs.html">documentation page</a> for more information.</p>
 
+  <pre id="log">Log messages will appear here.</pre>
+  <div id="ispresent">&lt;div id="ispresent" /></div>
+
+
   <script> 
+    // ========================================================
+    //  Using the Req() function to load scripts
+    // ========================================================
+  
     Req(
       // Require assets from our Req.assets database:
       'ui.slider',
       'ui.sortable',
 
       // Also require some file URLs not defined in the database:
-      '../../external/bgiframe/jquery.bgiframe.min.js',  // this relative URL gets appended to Req.baseUrl 
-      './local-file.js',                             // The "./" prefix bypasses Req.baseUrl to load a locally hosted file.
+      '../../external/bgiframe/jquery.bgiframe.min.js',  // this relative URL gets prefixed with Req.baseUrl 
+      './local-file.js',                                 // The "./" prefix bypasses Req.baseUrl to load a locally hosted file.
 
-      // Callback to do stuff once the above files have loaded
+      // Callback to do stuff once the above assets/files have loaded
       function(){
           var $ = jQuery,
               log = $('#log').html('Log:\n------------\n');

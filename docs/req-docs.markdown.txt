@@ -9,7 +9,7 @@ It's a standalone javascript library (no dependencies) and defines only a single
 
 The concept is loosely based on [JSLoad][1] with some ideas from [Dojo.require][2] and early [YUI 3.0 alphas][3] thrown into the mix.
 
-It's stable and thoroughly tested in production environment on over one hundred websites since 2008.
+It's stable and thoroughly tested in production environment on over one hundred live websites since 2008.
 
   [1]: http://www.instructables.com/blog/B2OLM73F5LDFN2Z/
   [2]: http://docs.dojocampus.org/dojo/require
@@ -127,6 +127,8 @@ Asset objects may contain the following properties:
 
 
 ### `Req` configuration properties
+
+The following properties are available to configure the basic behaviour of Req.js.
 
 **`Req.urlToken`**  (default: `'%{s}'`)
 :   Replacement pattern for inserting relative asset.src urls into _baseUrl and _joinUrl
