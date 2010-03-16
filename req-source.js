@@ -17,7 +17,7 @@
     * <./demo/req-demo.html>
 
   Documentation:
-    * <.docs/req-docs.html>
+    * <./docs/req-docs.html>
     * <http://mar.anomynet/entries/2009/10/20/23.39.22/>
 
   Get updates from:
@@ -328,7 +328,7 @@
     // prep (normalize) the assets in the arguments array.
     var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
         i = _queueStub.length;
-    // delete temporary "_encountered" markers inserted by _prepQueue (to avoid infinite `.req`uirement loops)
+    // delete temporary "_encountered" markers (inserted by _prepQueue to avoid infinite `.req`uirement loops)
     // subsequent runs of Req() might want to jump the queue with some of the same assets,
     // and in that case we don't want _prepQueue to skip them.
     while(i--) { delete _queueStub[i]._encountered; }
