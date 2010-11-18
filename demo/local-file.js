@@ -1,1 +1,1 @@
-jQuery('#log').append('Locally hosted demo.js loaded!\n');
+jQuery('#log').append('--------\nLocally hosted demo.js loaded!\n');

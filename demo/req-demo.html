@@ -88,7 +88,8 @@
   <p>This demo defines a simple asset dependency database for the jQuery and jQuery UI libraries - which it then uses to request the required scripts before doing some simple log operations. <a href="#" onclick="document.location='view-source:'+document.location.href;return false;">View-source</a> to learn how it's done, and use Firebug to inspect which <code>&lt;script /></code>s have been added to the <code>&lt;head></code> block.<br />
   See also the <a href="../docs/req-docs.html">documentation page</a> for more information.</p>
 
-  <pre id="log">Log messages will appear here.</pre>
+  <pre id="log">Log messages will appear here:
+</pre>
   <div id="ispresent">&lt;div id="ispresent" /></div>
 
 
@@ -109,8 +110,9 @@
       // Callback to do stuff once the above assets/files have loaded
       function(){
           var $ = jQuery,
-              log = $('#log').html('Log:\n------------\n');
+              log = $('#log');
 
+          log.append('------------\n');
           if ($.fn.slider) { log.append('`$.fn.slider` has loaded.\n'); }
           if ($.fn.sortable) { log.append('`$.fn.sortabale` has loaded.\n'); }
           if ($.fn.bgIframe) { log.append('`$.fn.bgIframe` has loaded.\n'); }
@@ -143,6 +145,17 @@
         }
 
     ); // end Req()
+
+    Req(
+      'ui.slider',
+      function () {
+          var $ = jQuery;
+          $('#log')
+              .append('--------\n')
+              .append('Appears first - note that ui.slider is *not* loaded twice.\n');
+        }
+    );
+
 
   </script>
 </body>

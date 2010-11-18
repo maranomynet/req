@@ -45,7 +45,7 @@
 */
 (function(h,a,c,k){if(h[a]==null&&h[c]){h[a]="loading";h[c](k,c=function(){h[a]="complete";h.removeEventListener(k,c,!1)},!1)}})(document,"readyState","addEventListener","DOMContentLoaded");
 
-(function(_null, undefined){
+(function(_null, _doc, undefined){
 
 
 
@@ -102,14 +102,15 @@
             // (And if it's not already _loaded)
             if (!asset._encountered && !asset._loaded)
             {
+              var req = asset.req;
               // then start normalizing it.
               // First off, raise the _encountered flag to avoiding infinite requirement loops.
               asset._encountered = 1;
-              // check if it's already _processed (normalized) by _prepQueue in an earlier run.
-              if (!asset._processed)
+              // check if it's already _normalized by _prepQueue in an earlier run.
+              if (!asset._normalized)
               {
-                // mark it as _processed
-                asset._processed = 1;
+                // mark it as _normalized
+                asset._normalized = 1;
                 // NOTE: Some assets may have no URL themselves - only a list of requirements.
                 // If there is a .src (URL), however, then...
                 if (asset.src)
@@ -121,14 +122,13 @@
                   _allAssets[asset.src] = asset;
                 }
                 // Enforce that the dependency list must be Array
-                var req = asset.req;
                 if (req && req.charAt)
                 {
                   asset.req = [req];
                 }
               }
               // if there are any dependencies listed (req), then (recursively) run that Array through _prepQueue
-              // and append the normalized/_processed results to the _fixedQueueStub.
+              // and append the _normalized results to the _fixedQueueStub.
               req && _fixedQueueStub.push.apply( _fixedQueueStub, _prepQueue(asset.req) );
               // finally push the asset onto the _fixedQueueStub
               _fixedQueueStub.push(asset);
@@ -257,7 +257,7 @@
                 // ...check if it has .src and load it
                 if (asset.src)
                 {
-                  var scriptElm = document.createElement('script'),
+                  var scriptElm = _doc.createElement('script'),
                       _charset = asset.charset || R.charset;
                   _charset  &&  (scriptElm.charset = _charset);
                   ;;;scriptElm.className = 'Req'; // add a className marker - to make debugging easier. (;;;-prefixed lines get removed by dean.edwards' "Packer" minifier)
@@ -323,7 +323,7 @@
     _joinUrl += _joinUrl.indexOf(s)>-1 ? '' : s; // enforce+append the mandatory %{s}
 
     // find + store/cache the <head> element
-    _headElm = _headElm || document.getElementsByTagName('head')[0];
+    _headElm = _headElm || _doc.getElementsByTagName('head')[0];
     _firstBaseElm = _firstBaseElm || _headElm.getElementsByTagName('base')[0];
     // prep (normalize) the assets in the arguments array.
     var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
@@ -391,4 +391,4 @@
 
 
 
-})(null);
+})(null, document);
