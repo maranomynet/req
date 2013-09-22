@@ -37,13 +37,13 @@
 
 */
 
-/*
-  First: Attempt to apply document.readyState support in FF3.5 and older. 
-  See more:
-   * http://webreflection.blogspot.com/2009/11/195-chars-to-help-lazy-loading.html
-   * http://groups.google.com/group/jquery-dev/browse_thread/thread/5aba1a1c2a7e53a7/e76736baf202f6e1
-*/
-(function(h,a,c,k){if(h[a]==null&&h[c]){h[a]="loading";h[c](k,c=function(){h[a]="complete";h.removeEventListener(k,c,!1)},!1)}})(document,"readyState","addEventListener","DOMContentLoaded");
+// /*
+//   First: Attempt to apply document.readyState support in FF3.5 and older.
+//   See more:
+//    * http://webreflection.blogspot.com/2009/11/195-chars-to-help-lazy-loading.html
+//    * http://groups.google.com/group/jquery-dev/browse_thread/thread/5aba1a1c2a7e53a7/e76736baf202f6e1
+// */
+// (function(h,a,c,k){if(h[a]==null&&h[c]){h[a]="loading";h[c](k,c=function(){h[a]="complete";h.removeEventListener(k,c,!1)},!1)}})(document,"readyState","addEventListener","DOMContentLoaded");
 
 (function(_null, _doc, undefined){
 
@@ -59,8 +59,7 @@
 
       // prep (normalize) the asset array (arguments) passed to the Req() function.
       // runs recursively to resolve `.req` dependency information, and fold those assets back into the returned queue-stub
-      _prepQueue = function (queueStub)
-      {
+      _prepQueue = function (queueStub) {
         var assetId,
             _allAssets = R.assets,
             _fixUrl = R.fixUrl,
@@ -71,7 +70,7 @@
         {
           var asset = queueStub[i];
 
-          if (typeof asset == 'function')
+          if (typeof asset === 'function')
           {
             // push functions onto the _fixedQueueStub and do nothing further. - Next please!
             _fixedQueueStub.push(asset);
@@ -184,13 +183,13 @@
       _processNext = function () {
         // don't to anything if both the _queue and _joinBuffer are empty.
         // Note: The _isRunning flag is set inline. (to save precious bytes :-)
-        if (_isRunning = !!(_queue.length || _joinBuffer.length))
+        if ((_isRunning = !!(_queue.length || _joinBuffer.length)))
         {
           // if the _queue is empty, then use the (combined) contents of the _joinBuffer
           var asset = _queue.shift() || _bufferFlush();
           // check if it's a function that needs to be run.
 
-          if (typeof asset == 'function')
+          if (typeof asset === 'function')
           {
             // before running any functions, make sure to flush the _joinBuffer
             if (_joinBuffer.length)
@@ -260,7 +259,6 @@
                   var scriptElm = _doc.createElement('script'),
                       _charset = asset.charset || R.charset;
                   _charset  &&  (scriptElm.charset = _charset);
-                  ;;;scriptElm.className = 'Req'; // add a className marker - to make debugging easier. (;;;-prefixed lines get removed by dean.edwards' "Packer" minifier)
                   scriptElm.src = asset.src;
                   scriptElm[_onload] = scriptElm[_onreadystatechange] = function()
                   {
@@ -301,7 +299,7 @@
 
       _isRunning,  // flag to indicate that _processNext is indeed running - only waiting for a <script> to load.
       _headElm,    // cached reference to the <head> element
-      _firstBaseElm, // reference to the first <base> element in the document - needed to avoid crash in MSIE 6.0 (see: http://dev.jquery.com/ticket/2709 ) 
+      _firstBaseElm, // reference to the first <base> element in the document - needed to avoid crash in MSIE 6.0 (see: http://dev.jquery.com/ticket/2709 )
       _baseUrl,    // cached *normalized* value of Req.baseUrl
       _joinUrl,    // cached *normalized* value of Req.joinUrl
       s,           // cached value of Req.urlToken
@@ -313,18 +311,21 @@
 // -------------------------------------------------------------------------------
 
   R = Req = function (appendToQueue) {  // (also create a reference to Req from a minifiable local variable `R`)
-    s = s || R.urlToken || '%{s}'; // default Req.urlToken to a value of '%{s}'
-    // normalize the baseUrl
-    _baseUrl = R.baseUrl || s;
-    _baseUrl += _baseUrl.indexOf(s)>-1 ? '' : s; // enforce+append the mandatory %{s}
+    if ( !s )
+    {
+      s = R.urlToken || '%{s}'; // default Req.urlToken to a value of '%{s}'
+      // normalize the baseUrl
+      _baseUrl = R.baseUrl || s;
+      _baseUrl += _baseUrl.indexOf(s)>-1 ? '' : s; // enforce+append the mandatory %{s}
 
-    // normalize the joinUrl
-    _joinUrl = R.joinUrl || s;
-    _joinUrl += _joinUrl.indexOf(s)>-1 ? '' : s; // enforce+append the mandatory %{s}
+      // normalize the joinUrl
+      _joinUrl = R.joinUrl || s;
+      _joinUrl += _joinUrl.indexOf(s)>-1 ? '' : s; // enforce+append the mandatory %{s}
 
-    // find + store/cache the <head> element
-    _headElm = _headElm || _doc.getElementsByTagName('head')[0];
-    _firstBaseElm = _firstBaseElm || _headElm.getElementsByTagName('base')[0];
+      // find + store/cache the <head> element
+      _headElm = _headElm || _doc.getElementsByTagName('head')[0];
+      _firstBaseElm = _firstBaseElm || _headElm.getElementsByTagName('base')[0];
+    }
     // prep (normalize) the assets in the arguments array.
     var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
         i = _queueStub.length;
@@ -362,7 +363,7 @@
   // Req.fixUrl() is used by _prepQueue() to normalize assset.src values and add a default _baseUrl to relative paths.
   R.fixUrl = function (url)
   {
-    return /^(\.?\/|https?:)/.test(url) ? url : _baseUrl.replace(s, url);
+    return (/^(\.?\/|https?:)/).test(url) ? url : _baseUrl.replace(s, url);
   };
 
   // Req.getJoinStub() is used by _bufferFlush() to get the joinUrl "stub" for the given asset.
