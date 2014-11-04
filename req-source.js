@@ -1,5 +1,5 @@
-/* encoding: utf-8
-
+/* Req.js v1.0 - MIT/GPL Licensed - More info: http://mar.anomynet/entries/2009/10/20/23.39.22/ @preserve */
+/*
   ****  Req-js - javascript lazy-loading and dependency managment made easy  ****
 
   Version: 1.0
