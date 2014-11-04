@@ -99,12 +99,12 @@
 
             // if this is the first we see of this asset, during this recursive run of _prepQueue.
             // (And if it's not already _loaded)
-            if (!asset._encountered && !asset._loaded)
+            if (!asset._seen && !asset._loaded)
             {
               var req = asset.req;
               // then start normalizing it.
-              // First off, raise the _encountered flag to avoiding infinite requirement loops.
-              asset._encountered = 1;
+              // First off, raise the _seen flag to avoiding infinite requirement loops.
+              asset._seen = 1;
               // check if it's already _normalized by _prepQueue in an earlier run.
               if (!asset._normalized)
               {
@@ -174,7 +174,7 @@
           // _processNext to run _bufferFlush again and thus slowly empty the _joinBuffer one asset at a time.
           asset = _joinBuffer.shift();
           // politely tell _processNext to not place this asset back in the _joinBuffer, but load it directly!
-          asset._alreadyBeenInJoinBuffer = 1;
+          asset._buffered = 1;
         }
         return asset;
       },
@@ -232,12 +232,12 @@
             }
             else
             {
-              // make sure the asset is joinable, and hasn't _alreadyBeenInJoinBuffer and then...
+              // make sure the asset is joinable, and hasn't been _buffered and then...
               // stash it away in the _joinBuffer for later processing - en masse.
               // NOTE: (we do this even if the asset doesn't have a .src - because it might be a group-asset
               //       defining a bunch of `.req`s,  and even have an `.onload` event that needs to be run
               //       at the appropriate hour.
-              if ((asset.join===true || !asset.src)  &&  !asset._alreadyBeenInJoinBuffer)
+              if ((asset.join===true || !asset.src)  &&  !asset._buffered)
               {
                 _joinBuffer.push(asset);
               }
@@ -245,7 +245,7 @@
               {
                 // ok, here we have an asset that needs to be loaded,
                 // but we may not do that directly if there's stuff in the _joinBuffer
-                if (_joinBuffer.length && !asset._alreadyBeenInJoinBuffer)
+                if (_joinBuffer.length && !asset._buffered)
                 {
                   // stash the asset back into the _queue
                   _queue.unshift(asset);
@@ -329,10 +329,10 @@
     // prep (normalize) the assets in the arguments array.
     var _queueStub = _prepQueue( [].slice.call(arguments, 0) ),
         i = _queueStub.length;
-    // delete temporary "_encountered" markers (inserted by _prepQueue to avoid infinite `.req`uirement loops)
+    // delete temporary "_seen" markers (inserted by _prepQueue to avoid infinite `.req`uirement loops)
     // subsequent runs of Req() might want to jump the queue with some of the same assets,
     // and in that case we don't want _prepQueue to skip them.
-    while(i--) { delete _queueStub[i]._encountered; }
+    while(i--) { delete _queueStub[i]._seen; }
 
     // Default to stacking new _queueStub at the beginning of the _queue, for immediate processing!
     // (this is A Good Thing because it faciliates nested Req() calls.)
