@@ -45,7 +45,7 @@
 // */
 // (function(h,a,c,k){if(h[a]==null&&h[c]){h[a]="loading";h[c](k,c=function(){h[a]="complete";h.removeEventListener(k,c,!1)},!1)}})(document,"readyState","addEventListener","DOMContentLoaded");
 
-(function(_null, _doc, undefined){
+(function(_null, _doc){
 
 
 
